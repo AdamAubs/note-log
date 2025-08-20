@@ -1,3 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 @import 'tailwindcss';
+@import 'tailwindcss';
+
+@theme {
+	/* Custom grayscale palette */
+	--color-dark: #1c1c1c;
+	--color-gray: #daddd8;
+	--color-cream: #ecebe4;
+	--color-light: #eef0f2;
+	--color-white: #fafaff;
+
+	/* Bright orange accents */
+	--color-orange-100: #ffe5b4;
+	--color-orange-300: #ffb347;
+	--color-orange-500: #ff8800;
+	--color-orange-700: #ff6600;
+
+	/* Inter font for blog */
+	--font-inter: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Optional: import a Google Font if you want a custom font */
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap'); */
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';

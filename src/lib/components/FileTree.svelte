@@ -1,0 +1,37 @@
+<script lang="ts">
+	let { tree, prefix } = $props();
+	import FileTree from '$lib/components/FileTree.svelte';
+</script>
+
+<ul class="font-mono">
+	{#each tree as node, i}
+		<li>
+			<span>
+				{#each prefix as p}
+					{p}
+				{/each}
+				{i === tree.length - 1 ? '└── ' : '├── '}
+			</span>
+			{#if node.type === 'folder'}
+				<span class="font-bold text-orange-500">{node.name}</span>
+				{#if node.children}
+					<FileTree
+						tree={node.children}
+						prefix={[
+							...prefix,
+							i === tree.length - 1
+								? prefix.length === 0
+									? '\u00A0\u00A0\u00A0'
+									: '\u00A0\u00A0\u00A0\u00A0'
+								: prefix.length === 0
+									? '|\u00A0\u00A0'
+									: '\u00A0|\u00A0\u00A0'
+						]}
+					/>
+				{/if}
+			{:else}
+				<a href={node.path} class="text-dark underline hover:text-orange-500">{node.name}</a>
+			{/if}
+		</li>
+	{/each}
+</ul>

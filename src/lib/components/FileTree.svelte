@@ -30,7 +30,7 @@
 					/>
 				{/if}
 			{:else}
-				<a href={node.path} class="text-dark underline hover:text-orange-500">{node.name}</a>
+				<a href={node.path} class="underline hover:text-orange-500">{node.name}</a>
 			{/if}
 		</li>
 	{/each}

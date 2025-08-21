@@ -17,10 +17,8 @@
 	<div class="hidden max-w-[16rem] min-w-[16rem] sm:block">
 		<SidebarTree tree={projectFileTree} isRoot={true} />
 	</div>
-</div>
 
-
-
-<div class="container mx-auto min-h-[70vh] w-full max-w-3xl p-6">
-	{@render children?.()}
+	<div class="container mx-auto min-h-[70vh] w-full max-w-3xl p-6">
+		{@render children?.()}
+	</div>
 </div>

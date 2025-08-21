@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Sun, MoonStar } from 'lucide-svelte';
 	import { page } from '$app/stores';
+	import { base } from '$app/paths';
 
 	import { themeChange } from 'theme-change';
 	import { currentTheme } from '$lib/stores/currentTheme';
@@ -29,7 +30,7 @@
 			<ul class="font-mono">
 				<li>
 					<span>├─ </span>
-					<a href="/" class="font-medium underline hover:text-orange-500">Home</a>
+					<a href="{base}/" class="font-medium underline hover:text-orange-500">Home</a>
 				</li>
 			</ul>
 		</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	let { tree, isRoot = false } = $props();
 	import SidebarTree from '$lib/components/SidebarTree.svelte';
 
@@ -18,7 +19,7 @@
 	{#if isRoot}
 		<li>
 			<span>├─ </span>
-			<a href="/" class="font-medium underline hover:text-orange-500">Home</a>
+			<a href="{base}/" class="font-medium underline hover:text-orange-500">Home</a>
 		</li>
 	{/if}
 	{#each tree as node, i}
@@ -26,7 +27,7 @@
 			{#if node.type === 'file'}
 				<span>{isLastFile(tree, i) ? '└── ' : '├── '}</span>
 				<a
-					href={node.path}
+					href={`${base}${node.path}`}
 					class="inline-block max-w-[12rem] truncate overflow-hidden align-middle whitespace-nowrap underline hover:text-orange-500"
 				>
 					{node.name}

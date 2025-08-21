@@ -1,6 +1,11 @@
 <script lang="ts">
+	import { base } from '$app/paths';
 	let { tree, prefix } = $props();
 	import FileTree from '$lib/components/FileTree.svelte';
+
+	function isExternal(path: string) {
+		return /^https?:\/\//.test(path);
+	}
 </script>
 
 <ul class="font-mono">
@@ -30,7 +35,14 @@
 					/>
 				{/if}
 			{:else}
-				<a href={node.path} class="underline hover:text-orange-500">{node.name}</a>
+				<a
+					href={isExternal(node.path) ? node.path : `${base}${node.path}`}
+					class="underline hover:text-orange-500"
+					target={isExternal(node.path) ? '_blank' : undefined}
+					rel={isExternal(node.path) ? 'noopener noreferrer' : undefined}
+				>
+					{node.name}
+				</a>
 			{/if}
 		</li>
 	{/each}

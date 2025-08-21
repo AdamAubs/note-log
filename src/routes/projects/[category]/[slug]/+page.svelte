@@ -1,0 +1,22 @@
+<script>
+	export let data;
+
+	const dateText = new Date(data.metadata.date).toLocaleDateString('en-US', {
+		year: 'numeric',
+		month: 'long',
+		day: 'numeric'
+	});
+</script>
+
+<svelte:head>
+	<title>Adam's Projects - {data.metadata.title}</title>
+</svelte:head>
+
+<div class="my-4">
+	<p class="text-3xl leading-relaxed font-bold md:text-4xl">{data.metadata.title}</p>
+	<p class="text-base-content/50">Published on {dateText}</p>
+</div>
+
+<article class="prose">
+	<svelte:component this={data.content} />
+</article>

@@ -1,0 +1,39 @@
+---
+title: Understanding Data Measurements for Cable Types 
+description: Data Measurements for Cable Types
+author: Adam Aubry
+date: '2025-08-30'
+---
+
+<script lang="ts">
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+</script>
+
+Through these practical example question/answer flash cards,
+you will gain a better understanding of the terminology used
+when discussing data transfer speeds and data storage.
+
+
+<SimpleFlashCard  question="How many bits are in a byte?" answer="8 bits are in 1 byte"/>
+<SimpleFlashCard  question="How many bits are in a nibble?" answer="4 bits are in 1 nibble"/>
+<SimpleFlashCard  question="What is the data transfer rate in bps (bits per second), if it took 2 seconds to send 50b?" answer="25bps"/>
+<SimpleFlashCard  question="How many bits are in 1kb?" answer="1,000 bits"/>
+<SimpleFlashCard  question="How many bits are in 1Mb?" answer="1,000,000 bits"/>
+<SimpleFlashCard  question="How many bits are in 1Gb?" answer="1,000,000,000 bits"/>
+<SimpleFlashCard  question="How many bits are in 1Tb?" answer="1,000,000,000,000 bits"/>
+<SimpleFlashCard  question="How many bytes are in 1kb?" answer="1000b / 8b = 125 B"/>
+
+<SimpleFlashCard  question=
+"Consider two internet service options priced the same:
+one offers 1 gigabit (1 Gb/s) and the 
+other offers 250 megabytes per second (250 MB/s). Which option is a
+better deal?
+" answer="1Gb = 1,000,000,000 bits
+          250MB = 250,000,000 * 8 = 2,000,000,000 bits.
+          Therefore 250MB is the better option as it is provides double bps speeds for the same price
+"/>
+
+<SimpleFlashCard  question="How is data transfer measured? " answer="data transfer is measured in bits"/>
+<SimpleFlashCard  question="How is data storage measured? " answer="data storage is measured in bytes"/>
+
+

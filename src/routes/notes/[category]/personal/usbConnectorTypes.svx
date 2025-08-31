@@ -1,0 +1,20 @@
+---
+title: USB connector Types 
+description: USB-A, USB-B, USB-C 
+author: Adam Aubry
+date: '2025-08-30'
+---
+
+<script lang="ts">
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+    import PictureFlashCard from '$lib/components/PictureFlashCard.svelte';
+</script>
+
+
+<PictureFlashCard question="What type of USB is this?" answer="USB Type A" imgPath="/usbConnectorTypes/usb-type-a.png"/>
+<PictureFlashCard question="What type of USB is this?" answer="USB Type B" imgPath="/usbConnectorTypes/usb-type-b.png"/>
+<PictureFlashCard question="What type of USB is this?" answer="USB Type B mini" imgPath="/usbConnectorTypes/usb-mini-b.png"/>
+<PictureFlashCard question="What type of USB is this?" answer="USB Type B micro" imgPath="/usbConnectorTypes/usb-micro-b.png"/>
+<PictureFlashCard question="What type of USB is this?" answer="USB 3.0 Type B Micro" imgPath="/usbConnectorTypes/usb-micro-3-b.png"/>
+<PictureFlashCard question="What type of USB is this?" answer="USB Type C" imgPath="/usbConnectorTypes/usb-c.png"/>
+

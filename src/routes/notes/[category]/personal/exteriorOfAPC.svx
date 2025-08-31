@@ -1,0 +1,20 @@
+---
+title: Exterior of a PC 
+description: Understand the different styles of computers
+author: Adam Aubry
+date: '2025-08-30'
+---
+
+<script lang="ts">
+    import PictureFlashCard from '$lib/components/PictureFlashCard.svelte';
+</script>
+
+These flash cards will help you recognize the names of the
+different exterior ports and connectors found on a PC
+
+<PictureFlashCard question="What style of computer is this?" answer="Tower Style Computer" imgPath="/exteriorOfAPC/towerStyle.png"/>
+<PictureFlashCard question="What is this?" answer="Memory Card Reader" imgPath="/exteriorOfAPC/memoryReader.png"/>
+<PictureFlashCard question="What is this?" answer="1/8th input/output mini audio jack" imgPath="/exteriorOfAPC/audioJack.png"/>
+<PictureFlashCard question="What is this?" answer="SuperSpeed USB Style Connectors" imgPath="/exteriorOfAPC/ssUsb.png"/>
+<PictureFlashCard question="What is this?" answer="USB-C Style Connector" imgPath="/exteriorOfAPC/usb-c.png"/>
+

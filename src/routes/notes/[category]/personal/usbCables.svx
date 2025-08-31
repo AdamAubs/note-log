@@ -1,0 +1,36 @@
+---
+title: USB cables 
+description: Understanding USB Cables
+author: Adam Aubry
+date: '2025-08-30'
+---
+
+<script lang="ts">
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+    import PictureFlashCard from '$lib/components/PictureFlashCard.svelte';
+</script>
+
+## Short History
+
+Initially serial cables were connected to computers using either
+DB9 or DB25 connectors.
+
+![DB9 connector](/usbCables/db9-connector.png)
+
+However, data transmission over serial cables is considered very slow
+because data is sent one bit at a time, measured in bits per second, with
+a maximum speed of 115 kilobits per second.
+
+<SimpleFlashCard  question="How many devices can be plugged into one serial port?" answer="Only 1 device can be plugged into on serial port"/>
+<SimpleFlashCard  question="How many devices can be plugged into one USB port?" answer="USB allows up to 127 devices to be connected in a daisy chain. However, this is a theoretical limit. In practice each USB is controlled by a host controller that shares bandwidth among all connected devices."/>
+<SimpleFlashCard  question="What is the transfer rate and theoretical speed of USB 2.0 Low Speed (Original name: USB 1.0)" answer="Transfer Rate: 1.5Mbps, Theoretical Speed: 0.1875MB/s"/>
+<SimpleFlashCard  question="What is the transfer rate and theoretical speed of USB 2.0 Full Speed (Original name: USB 1.1)" answer="Transfer Rate: 12Mbps, Theoretical Speed: 1.5MB/s"/>
+<SimpleFlashCard  question="What is the transfer rate and theoretical speed of USB 2.0 Hi-Speed (Original name: USB 2.0)" answer="Transfer Rate: 480Mbps, Theoretical Speed: 60MB/s"/>
+<SimpleFlashCard  question="What is the transfer rate and theoretical speed of USB 3.0 SuperSpeed (Original name: USB 3.1 GEN1)" answer="Transfer Rate: 5Gbps, Theoretical Speed: 625MB/s"/>
+<SimpleFlashCard  question="What is the transfer rate and theoretical speed of USB 3.2 SuperSpeed USB 10Gbps (Original name: USB 3.1 GEN2)" answer="Transfer Rate: 10Gbps, Theoretical Speed: 1250MB/s"/>
+<SimpleFlashCard  question="What is the transfer rate and theoretical speed of USB 3.2 SuperSpeed USB 20Gbps" answer="Transfer Rate: 20Gbps, Theoretical Speed: 2500MB/s"/>
+<SimpleFlashCard  question="What is the transfer rate and theoretical speed of USB 4.0" answer="Transfer Rate: 40Gbps, Theoretical Speed: 5GB/s"/>
+<SimpleFlashCard  question="What is the issue with using a USB cable that is longer than its specified maximum length?" answer="USB cables that exceed the recommend length can experience signal deterioration and slower speeds."/>
+<SimpleFlashCard  question="How many milliamps of power can USB 1.0, 1.1, and 2.0 ports provide?" answer="500 milliamps (0.5 amps) of power"/>
+<SimpleFlashCard  question="How many milliamps of power can USB 3.0 ports provide?" answer="900 (0.9 amps) of power"/>
+<SimpleFlashCard  question="How many milliamps of power can a Dedicated power port provide through USB?" answer="1500 milliamps (1.5 amps)"/>

@@ -1,0 +1,13 @@
+---
+title: WTF is x86, RISC-V, and ARM?
+author: Adam Aubry
+date: '2025-08-30'
+---
+
+<script lang="ts">
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+</script>
+
+# {title}
+
+<SimpleFlashCard  question="What is x86" answer="A CISC CPU architecture developed by Intel."/>

@@ -6,7 +6,6 @@
 </script>
 
 <svelte:head>
-	<!-- You can add your font import here if needed -->
 	<link
 		rel="stylesheet"
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"

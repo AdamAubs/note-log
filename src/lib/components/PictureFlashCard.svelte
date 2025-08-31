@@ -1,7 +1,7 @@
 <script>
 	let flipped = $state(false);
 	let { question, answer, imgPath } = $props();
-	console.log(imgPath);
+	import { base } from '$app/paths';
 </script>
 
 <div class="container">
@@ -9,7 +9,7 @@
 	<button class={['flash-card', { flipped }]} onclick={() => (flipped = !flipped)}>
 		<div class="front">
 			<div class="img-question-container">
-				<img src={imgPath} alt={question} />
+				<img src="{base}{imgPath}" alt={question} />
 				<p class="question">{question}</p>
 			</div>
 		</div>

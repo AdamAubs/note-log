@@ -8,6 +8,8 @@ date: '2025-08-30'
 <script lang="ts">
     import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
     import PictureFlashCard from '$lib/components/PictureFlashCard.svelte';
+
+	import { base } from '$app/paths';
 </script>
 
 ## Short History
@@ -15,7 +17,7 @@ date: '2025-08-30'
 Initially serial cables were connected to computers using either
 DB9 or DB25 connectors.
 
-![DB9 connector](/usbCables/db9-connector.png)
+![DB9 connector]({base}/usbCables/db9-connector.png)
 
 However, data transmission over serial cables is considered very slow
 because data is sent one bit at a time, measured in bits per second, with

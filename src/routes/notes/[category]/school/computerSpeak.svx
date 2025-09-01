@@ -1,0 +1,61 @@
+---
+title: Computer Speak
+description: Some computer architecture terms I thought would be good knowing
+author: Adam Aubry
+date: '2025-08-31'
+---
+
+<script lang="ts">
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+    import PictureFlashCard from '$lib/components/PictureFlashCard.svelte';
+    import { base } from '$app/paths';
+</script>
+
+
+
+<SimpleFlashCard  question="What is bandwidth?" answer="The total amount of work done in a given time, such as megabytes per second for a disk transfer. Also referred to as throughput"/>
+<SimpleFlashCard  question="What is latency?" answer="The time between the start and the completion of an event, such as milliseconds for a disk access. Also referred to as response time"/>
+<SimpleFlashCard  question="What does MIPS stand for?" answer="Million Instructions Per Second"/>
+<SimpleFlashCard question="As feature sizes shrink in semiconductor manufacturing, how does transistor count improvement compare to transistor performance improvement?" answer="Transistor count improves quadratically with decreasing feature size, while transistor performance improves linearly (to a first approximation)."/>
+
+<SimpleFlashCard question="True or False: Wire delay scales better than transistor performance as feature sizes decrease." answer="False. Wire delay scales poorly compared to transistor performance, creating additional challenges for designers. Wire delay has become a major design obstacle and is often more critical than transistor switching delay."/>
+
+<SimpleFlashCard question="Why must operating voltage be reduced as feature sizes shrink in the vertical dimension?" answer="The reduction in operating voltage is required to maintain correct operation and reliability of the transistors as the vertical dimension shrinks."/>
+
+<SimpleFlashCard question="What innovations have density improvements in transistors supported?" answer="In early days: moving quickly from 4-bit, to 8-bit, to 16-bit, to 32-bit, to 64-bit microprocessors. More recently: multiple processors per chip, wider SIMD units, and many innovations in speculative execution and caches."/>
+
+<SimpleFlashCard question="Wire delay increases in proportion to the product of which two electrical properties?" answer="Wire delay increases in proportion to the product of resistance and capacitance."/>
+
+<SimpleFlashCard question="What happens to resistance and capacitance per unit length as feature sizes shrink?" answer="As feature size shrinks, wires get shorter, but the resistance and capacitance per unit length get worse (increase)."/>
+
+<SimpleFlashCard question="True or False: Power dissipation now plays an even greater role than wire delay in modern integrated circuit design." answer="True. The text states that 'power now plays an even greater role than wire delay.'"/>
+
+<SimpleFlashCard question="What process enhancement is mentioned as providing one-time improvements in wire delay?" answer="The introduction of copper is mentioned as providing one-time improvements in wire delay."/>
+
+<SimpleFlashCard question="What is the biggest challenge facing computer designers today for nearly every class of computer?" answer="Energy is the biggest challenge facing the computer designer for nearly every class of computer."/>
+
+<SimpleFlashCard question="What are the three primary concerns for a system designer regarding performance, power, and energy?" answer="1) Maximum power a processor ever requires, 2) Sustained power consumption (TDP), and 3) Energy and energy efficiency."/>
+
+<SimpleFlashCard question="What is TDP and what does it determine?" answer="TDP stands for Thermal Design Power - it measures sustained power consumption and determines the cooling requirement."/>
+
+<SimpleFlashCard question="How does TDP compare to peak power and actual average power?" answer="TDP is neither peak power (which is often 1.5 times higher) nor actual average power during computation (which is likely to be lower still)."/>
+
+<SimpleFlashCard question="What two features do modern processors provide to manage heat?" answer="1) Circuitry that lowers the clock rate as thermal temperature approaches the junction temperature limit, and 2) A thermal overload trap that powers down the chip if the first technique fails."/>
+
+<SimpleFlashCard question="Which is a better metric for comparing processors: energy or power? Why?" answer="Energy is always a better metric because it is tied to a specific task and the time required for that task. Energy to complete a workload equals average power times execution time."/>
+
+<SimpleFlashCard question="If processor A has 20% higher average power than processor B but executes a task in 70% of the time, which is more energy efficient?" answer="Processor A is more energy efficient. Its energy consumption is 1.2 × 0.7 = 0.84, which is better than processor B."/>
+
+<SimpleFlashCard question="What determines the electricity bill for a cloud and battery lifetime for a smartphone?" answer="Both are determined by the energy consumed, which is why energy is the right metric for comparing computer alternatives with fixed workloads."/>
+
+<SimpleFlashCard question="What has been the traditional primary energy consumption in CMOS chips?" answer="Switching transistors, also called dynamic energy."/>
+
+<SimpleFlashCard question="What is the formula for dynamic energy per transistor?" answer="Energy dynamic ∝ Capacitive load × Voltage²"/>
+
+<SimpleFlashCard question="What is the formula for dynamic power?" answer="Power dynamic ∝ 1/2 × Capacitive load × Voltage² × Frequency switched"/>
+
+<SimpleFlashCard question="For a fixed task, what happens to power and energy when clock rate is slowed?" answer="Slowing clock rate reduces power, but not energy."/>
+
+<SimpleFlashCard question="Why have voltages dropped from 5V to just under 1V in 20 years?" answer="Because dynamic power and energy are greatly reduced by lowering the voltage (since they are proportional to voltage squared)."/>
+
+<SimpleFlashCard question="What determines the capacitive load in a transistor?" answer="The capacitive load is a function of the number of transistors connected to an output and the technology, which determines the capacitance of the wires and transistors."/>

@@ -1,0 +1,36 @@
+---
+title: WTF is 80x86, RISC-V, and ARM?
+author: Adam Aubry
+date: '2025-08-31'
+---
+
+80x86 (x86), RISC-V, and ARM are all Instruction Set Architectures (ISAs). 
+They serve as the bridge between high-level software written in programming languages 
+like C/C++ and Python and the hardware that executes your programs on physical computer chips. 
+
+## 80x86 (x86)
+
+- Used in most desktop and laptop computers
+- Found in Intel and AMD processors
+- Uses Complex **Instruction Set Computing (CISC)** design with hundreds of complex instructions
+- Each instruction can perform multiple operations but takes more energy and chip space
+- **Backward compatibility:** Can run software written decades ago, which is crucial for businesses
+- More power-hungry, making it less suitable for mobile devices
+
+## ARMv8
+
+- Dominates smartphones, tablets, and increasingly laptops (like Apple's M-series chips)
+- Uses **Reduced Instruction Set Computing (RISC)** design with simpler, uniform instructions
+- Energy efficient: Perfect for battery-powered devices
+- Instructions execute faster individually, but may need more instructions for complex tasks
+- Growing in data centers due to power efficiency
+- Licensed architecture (companies pay ARM Holdings to use it)
+
+## RISC-V
+
+- The newest ISA, created at UC Berkeley
+- Open-source and royalty-free: Anyone can use, modify, or implement it without licensing fees
+- Clean, modern RISC design that learned from 30+ years of processor evolution
+- More general-purpose registers than x86 (32 vs 16), allowing better performance
+- Modular design: You can add only the features you need
+- Focused set of basic operations with no unnecessary complexity

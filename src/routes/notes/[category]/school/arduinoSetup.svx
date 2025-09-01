@@ -1,0 +1,86 @@
+---
+title: Understanding the Arduino board
+description: You just setup your arduino - now what?
+author: Adam Aubry
+date: '2025-08-31'
+---
+
+<script lang="ts">
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+    import PictureFlashCard from '$lib/components/PictureFlashCard.svelte';
+    import { base } from '$app/paths';
+    //![Arduino Pinout]({base}/arduinoSetup/arduino-uno-r4-pinout.jpg)
+</script>
+
+## What are Digital Pins?
+
+The Arduino Uno has 14 digital input/output pins. 6 of these pins support PWM (Pulse Width Modulation), which allows you to simulate analog output by rapidly switching between HIGH and LOW. These pins act like switches that can either be ON (HIGH) or OFF (LOW).
+
+### Input Mode - Reading Information
+
+Input pins are very sensitive, and can detect tiny electrical changes. This can be useful for such tasks as implementing a capacitive touch sensor. However, pins configured as `pinMode(pin, INPUT)` with nothing connected to them, or with wires connected to them that are not connected to other circuits, will pick up random electrical noise and give you unpredictable readings.
+
+To solve this issue you can use a "pull" resistor to pull the pin to a known state (either HIGH or LOW) when nothing else is controlling it.
+
+### Pullup Resistor Example
+
+Imagine you have a button connected to an Arduino pin. When the button is NOT pressed, the pin is "floating" - it's not connected to anything. This is like having a wire just hanging in the air, and it picks up electrical noise, giving you random HIGH and LOW readings.
+
+To fix this, we connect 5V to `b1:1l` through a `10kΩ` resistor. While the 5V does the actual "pulling up" to HIGH, the resistor limits current and prevents damage when the button connects the pin to ground. This keeps the pin at a known HIGH state when the button is not pressed.
+
+**How it works:**
+- Button NOT pressed → Pin reads HIGH (thanks to 5V through resistor)
+- Button IS pressed → Pin reads LOW (button connects pin to ground)
+
+[Click here to see the pull up resistor example](https://wokwi.com/projects/440846244228023297)
+
+### Arduino's Built-in Solution
+
+Arduino has solved this wiring complexity by integrating pullup resistors (typically 20kΩ-50kΩ) directly into the Atmega chip that can be accessed from software.
+
+Instead of making the pullup circuit yourself as we did in the example above, you can simply set the `pinMode()` as `INPUT_PULLUP`. Here is the same functionality using Arduino's built-in pullup:
+
+```c++
+void setup() {
+  pinMode(2, INPUT_PULLUP);  // Set pin 2 as input with internal pullup
+  Serial.begin(9600);        // Start serial monitor
+}
+void loop() {
+  int buttonState = digitalRead(2);
+  Serial.println(buttonState);
+  delay(200);
+}
+```
+
+**Note:** With `INPUT_PULLUP`, the logic is inverted compared to the external pullup example:
+- Button NOT pressed → Pin reads HIGH
+- Button IS pressed → Pin reads LOW
+
+This built-in feature makes wiring much simpler - you only need to connect one side of the button to the pin and the other side to ground!
+
+### Output Mode - Controlling Devices
+
+Output pins can provide up to 40 mA of current to other devices. They're in a "low-impedance state," which means they can push current effectively to power external components like LEDs, buzzers, and small sensors.
+
+**Safety Warning:** Connecting devices that draw too much current can permanently damage individual pins, and short circuits can destroy the entire Arduino. This is why protective resistors are essential.
+
+**What actually happens during damage:** Each Arduino pin contains tiny transistors that act as electronic switches. When you connect a device that draws more than 40mA, these transistors try to supply the current (because that's their job), but the excessive current generates heat that physically burns out the silicon transistor junctions. Once this happens, the damage is permanent - you'll have a "dead" pin that can no longer provide proper HIGH/LOW signals.
+
+**What OUTPUT pins can power:**
+- ✅ LEDs (with resistor)
+- ✅ Small buzzers
+- ✅ Low-power sensors
+- ❌ Motors, relays, or solenoids (too power-hungry)
+
+Here is a simple circuit that lights up an LED using pin 7:
+[Click here to see the simple output circuit](https://wokwi.com/projects/440860665326678017)
+
+**Why the resistor matters:** Notice that we placed a `470Ω` resistor in series with our LED. This serves two critical purposes:
+
+1. **Protects the LED** - LEDs can burn out instantly if given too much current
+2. **Protects the Arduino** - Limits current draw to stay within the 40mA safe limit
+
+**Real-world example:** A typical LED might try to draw 50-100mA without a current-limiting resistor. This would exceed our pin's 40mA limit and could permanently damage pin 7, leaving you with a "dead" pin.
+
+**Best practice:** Always check a component's current requirements before connecting it to Arduino pins. When in doubt, use a 470Ω or 1kΩ resistor for protection - it's much cheaper than replacing your Arduino!
+

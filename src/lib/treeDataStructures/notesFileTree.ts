@@ -49,6 +49,11 @@ export const notesFileTree = [
 								type: 'file'
 							}
 						]
+					},
+					{
+						name: 'Trees',
+						type: 'folder',
+						children: []
 					}
 				]
 			}
@@ -64,7 +69,23 @@ export const notesFileTree = [
 				children: [
 					{
 						name: 'WTF is x86, RISC-V, and ARM?',
-						path: '/notes/school/wtf01',
+						path: '/notes/school/wtfisx86RISC-VARM',
+						type: 'file'
+					},
+					{
+						name: 'Computer Speak',
+						path: '/notes/school/computerSpeak',
+						type: 'file'
+					}
+				]
+			},
+			{
+				name: 'Computer Design',
+				type: 'folder',
+				children: [
+					{
+						name: 'Setting up the Arduino',
+						path: '/notes/school/arduinoSetup',
 						type: 'file'
 					}
 				]

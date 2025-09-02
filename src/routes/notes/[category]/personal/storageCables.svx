@@ -1,0 +1,46 @@
+---
+title: storage cables 
+description: Understanding storage cables with flash cards
+author: Adam Aubry
+date: '2025-09-02'
+---
+
+<script lang="ts">
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+    import PictureFlashCard from '$lib/components/PictureFlashCard.svelte';
+
+	import { base } from '$app/paths';
+</script>
+
+<SimpleFlashCard question="What are the three main types of storage cables?" answer="Thunderbolt, Lighting, SATA, eSATA, SCSI and Serial Attached SCSI (SAS)"/>
+
+<PictureFlashCard question="What type of cable is this?" answer="eSATA" imgPath="/storageCables/eSATA.jpg"/>
+<PictureFlashCard question="What type of cable is this?" answer="SATA" imgPath="/storageCables/SATA.jpg"/>
+<PictureFlashCard question="What type of cable is this?" answer="SCSI" imgPath="/storageCables/SCSI.jpg"/>
+
+<SimpleFlashCard question="What does SATA stand for?" answer="Serial Advanced Technology Attachment Interface"/>
+<SimpleFlashCard question="How many pins does a SATA data cable have?" answer="7 pins"/>
+<SimpleFlashCard question="How many pins does a SATA power cable have?" answer="15 pins"/>
+<SimpleFlashCard question="What are the three SATA revisions and their speeds?" answer="Revision 1 (1.5 Gbps), Revision 2 (3 Gbps), Revision 3 (6 Gbps)"/>
+<SimpleFlashCard question="What does eSATA stand for?" answer="External SATA"/>
+<SimpleFlashCard question="What does SCSI stand for?" answer="Small Computer Systems Interface"/>
+<SimpleFlashCard question="How many devices can Narrow SCSI support?" answer="Up to 7 devices"/>
+<SimpleFlashCard question="How many devices can Wide SCSI support?" answer="Up to 15 devices"/>
+<SimpleFlashCard question="What does SAS stand for?" answer="Serial Attached SCSI"/>
+<SimpleFlashCard question="What is the maximum data transfer speed for SAS?" answer="Up to 24 gigabits per second"/>
+<SimpleFlashCard question="How many devices can a single SAS controller manage?" answer="Up to 128 devices"/>
+<SimpleFlashCard question="What company developed the Lightning cable?" answer="Apple"/>
+<SimpleFlashCard question="What is a key feature of Lightning connectors?" answer="They are fully reversible - can be inserted either upwards or downwards"/>
+<SimpleFlashCard question="Which Thunderbolt versions use DisplayPort connectors?" answer="Thunderbolt versions 1 and 2"/>
+<SimpleFlashCard question="Which Thunderbolt versions use USB-C connectors?" answer="Thunderbolt versions 3 and 4"/>
+<SimpleFlashCard question="What is the maximum data transfer speed for Thunderbolt 4?" answer="Up to 40 gigabits per second"/>
+<SimpleFlashCard question="What is the typical length of Thunderbolt cables?" answer="Around half a meter or about two feet"/>
+<SimpleFlashCard question="How many pins does a high-density SCSI data cable have?" answer="68 pins"/>
+<SimpleFlashCard question="How many pins does an SCA (Single Connector Attachment) cable have?" answer="80 pins"/>
+<SimpleFlashCard question="What was the maximum speed of original SCSI technology?" answer="320 megabits per second"/>
+<SimpleFlashCard question="Is SAS backward compatible with SATA drives?" answer="Yes, SAS is backward compatible with SATA drives"/>
+<SimpleFlashCard question="Why did eSATA become less common over time?" answer="Because USB 3.0 and USB 4.0 offered faster speeds (10-40 Gbps) compared to eSATA's 6 Gbps"/>
+<SimpleFlashCard question="What type of power connector is used with traditional SCSI?" answer="MOLEX connector"/>
+<SimpleFlashCard question="What is often the bottleneck when using SATA Revision 3 with mechanical hard drives?" answer="The mechanical limitations of the hard drive itself"/>
+<SimpleFlashCard question="In what environments is SAS primarily used?" answer="Enterprise environments, servers, and data-intensive applications"/>
+<SimpleFlashCard question="What feature makes SAS suitable for 24/7 operation?" answer="Enterprise-level reliability with features like dual port architectures for redundancy"/>

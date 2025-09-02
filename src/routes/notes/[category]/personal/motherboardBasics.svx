@@ -1,0 +1,13 @@
+---
+title: Motherboard Basics
+description: Understanding the basics of what a motherboard is
+author: Adam Aubry
+date: '2025-09-02'
+---
+
+<script lang="ts">
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+    import PictureFlashCard from '$lib/components/PictureFlashCard.svelte';
+
+	import { base } from '$app/paths';
+</script>

@@ -30,6 +30,27 @@ export const notesFileTree = [
 								name: 'USB Cables',
 								path: '/notes/personal/usbCables',
 								type: 'file'
+							},
+							{
+								name: 'Video Cables',
+								path: '/notes/personal/videoCables',
+								type: 'file'
+							},
+							{
+								name: 'Storage Cables',
+								path: '/notes/personal/storageCables',
+								type: 'file'
+							}
+						]
+					},
+					{
+						name: 'Motherboards',
+						type: 'folder',
+						children: [
+							{
+								name: 'Motherboard Basics',
+								path: '/notes/personal/motherboardBasics',
+								type: 'file'
 							}
 						]
 					}
@@ -87,6 +108,23 @@ export const notesFileTree = [
 						name: 'Setting up the Arduino',
 						path: '/notes/school/arduinoSetup',
 						type: 'file'
+					}
+				]
+			},
+			{
+				name: 'Computer Algorithms',
+				type: 'folder',
+				children: [
+					{
+						name: 'Homework',
+						type: 'folder',
+						children: [
+							{
+								name: 'Homework 1',
+								path: '/notes/school/compAlgoHw1',
+								type: 'file'
+							}
+						]
 					}
 				]
 			}

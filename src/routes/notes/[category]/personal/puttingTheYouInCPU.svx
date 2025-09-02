@@ -1,0 +1,8 @@
+---
+title: Understanding Data Measurements for Cable Types 
+description: Data Measurements for Cable Types
+author: Adam Aubry
+date: '2025-08-30'
+---
+
+

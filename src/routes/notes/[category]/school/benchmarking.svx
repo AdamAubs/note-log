@@ -1,0 +1,14 @@
+---
+title: Benchmarking
+description: measuring the performance of computers
+author: Adam Aubry
+date: '2025-08-31'
+---
+
+<script lang="ts">
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+    import PictureFlashCard from '$lib/components/PictureFlashCard.svelte';
+    import { base } from '$app/paths';
+</script>
+
+

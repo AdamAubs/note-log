@@ -59,3 +59,22 @@ date: '2025-08-31'
 <SimpleFlashCard question="Why have voltages dropped from 5V to just under 1V in 20 years?" answer="Because dynamic power and energy are greatly reduced by lowering the voltage (since they are proportional to voltage squared)."/>
 
 <SimpleFlashCard question="What determines the capacitive load in a transistor?" answer="The capacitive load is a function of the number of transistors connected to an output and the technology, which determines the capacitance of the wires and transistors."/>
+
+
+## The importance of dynamic Energy and power in CMOS chips
+
+### dynamic energy is the energy consumed when transitors switch states (from 0 to 1 or 1 to 0).
+
+**Energy ∝ Capacitive Load × Voltage²**
+
+### dynamic power adds the frequency component
+
+**Power ∝ ½ × Capacitive Load × Voltage² × Frequency**
+
+## Why this is critical
+
+- sacrifice some speed for dramatic power savings
+- small voltage reductions yield big battery life improvements
+- as transistors get smaller, managing power consumption becomes the limiting factor
+
+

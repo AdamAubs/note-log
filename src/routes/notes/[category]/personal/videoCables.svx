@@ -1,0 +1,39 @@
+---
+title: video cables 
+description: Understanding video Cables with flash cards
+author: Adam Aubry
+date: '2025-09-02'
+---
+
+<script lang="ts">
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+    import PictureFlashCard from '$lib/components/PictureFlashCard.svelte';
+
+	import { base } from '$app/paths';
+</script>
+
+<SimpleFlashCard question="What does HDMI stand for?" answer="High Definition Multimedia Interface"/>
+<SimpleFlashCard question="What does HDCP stand for and what does it do?" answer="HDMI Digital Content Protection - it allows devices to validate and perform a handshake to ensure both are authorized to receive the signal"/>
+<SimpleFlashCard question="What are the three HDMI connector types?" answer="Type A (full-size), Type C (mini HDMI), and Type D (micro HDMI)"/>
+<SimpleFlashCard question="What are the two basic HDMI cable categories?" answer="Category 1 (Standard) - supports up to 1080p, and Category 2 (High Speed) - supports 4K, 8K, and higher refresh rates"/>
+<SimpleFlashCard question="What organization developed DisplayPort?" answer="Video Electronics Standards Association (VESA)"/>
+<SimpleFlashCard question="What are the two DisplayPort connector types?" answer="Full-size DisplayPort (with locking mechanism) and Mini DisplayPort (MiniDP or mDP)"/>
+<SimpleFlashCard question="What does DVI stand for?" answer="Digital Visual Interface"/>
+<SimpleFlashCard question="What are the three types of DVI cables?" answer="DVI-A (analog only), DVI-D (digital only), and DVI-I (integrated - both analog and digital)"/>
+<SimpleFlashCard question="What does VGA stand for and how many pins does it have?" answer="Video Graphics Array - it uses a 15-pin D-shaped connector"/>
+<SimpleFlashCard question="Which Thunderbolt versions use mini DisplayPort connectors?" answer="Thunderbolt 1 and 2"/>
+<SimpleFlashCard question="Which Thunderbolt versions use USB-C connectors?" answer="Thunderbolt 3 and 4"/>
+<SimpleFlashCard question="What is the maximum data transfer speed for Thunderbolt 3?" answer="40 gigabits per second"/>
+<SimpleFlashCard question="What is the maximum cable length for Thunderbolt 3?" answer="0.5 meters (1.6 feet)"/>
+<SimpleFlashCard question="Can you plug a USB-C device into a Thunderbolt port?" answer="Yes, all Thunderbolt 3 and 4 ports support USB-C devices"/>
+<SimpleFlashCard question="Can you plug a Thunderbolt device into any USB-C port?" answer="No, not all USB-C ports support Thunderbolt"/>
+<SimpleFlashCard question="What protocol allows USB-C to transmit video signals?" answer="DisplayPort Alternate Mode"/>
+<SimpleFlashCard question="What resolutions can HDMI support?" answer="From 1080p up to 4K and 8K"/>
+<SimpleFlashCard question="What are typical HDMI refresh rates?" answer="60, 120, or 144 hertz"/>
+<SimpleFlashCard question="What is the maximum speed of HDMI 2.1?" answer="48 gigabits per second (ultra high speed)"/>
+<SimpleFlashCard question="What is the maximum speed of DisplayPort's latest versions?" answer="Up to 80 gigabits per second"/>
+<SimpleFlashCard question="What symbol identifies Thunderbolt ports?" answer="A lightning bolt symbol"/>
+<SimpleFlashCard question="What type of connector does VGA use?" answer="15-pin D-shaped connector"/>
+<SimpleFlashCard question="What can cause color distortions on VGA displays?" answer="Damaged pins on the VGA connector"/>
+<SimpleFlashCard question="What makes USB Type C popular as a display interface?" answer="Its versatility - it can transmit video, power, and data through a single reversible connector"/>
+<SimpleFlashCard question="What is a key advantage of USB-C for connecting devices?" answer="It reduces cable clutter by carrying power, video, and data in one cable"/>

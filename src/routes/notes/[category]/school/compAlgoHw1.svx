@@ -1,0 +1,48 @@
+---
+title: Homework 1 
+description: Computer Algorithm Homework 1 
+author: Adam Aubry
+date: '2025-09-01'
+---
+
+
+## Key terms
+
+- **Polynomial:** N raised to a power that never changes (no variables in the exponent)
+- **Big O notation:** A way to descirbe how fast an algorithm gets slower as the input size grows.
+- **Asymptotic Upper Bounds**: Denoted `O` and is the defined the same as Big O notation
+- **Asymptotic Lower Bounds:** Denoted `Ω`. The least amount of time to the algorithm will take to finish.
+- **Asymptotic Tight Bounds:** Denoted `Θ`. The exact time the algorithm will take to finish
+- **Transitivity:** If `A` relates to `B`, and `B` relates to `C`, then `A` relates to `C`
+- **asymptotic dominance**: Increasing order of growth rate (from slowest growing to fastest growing)
+
+<script>
+  import Math from '$lib/components/Math.svelte';
+  
+  const exponential2n = String.raw`2^n`;
+  const linearThousand = String.raw`1000 \cdot n`;
+  const nLogN = String.raw`n^{\log n}`;
+  const nSquared = String.raw`n^2`;
+  const doubleExponential = String.raw`2^{2^n}`;
+  const logN = String.raw`\log(n)`;
+  const logLogN = String.raw`\log(\log(n))`;
+  const nTimesLogN = String.raw`n \cdot \log(n)`;
+  const bigO = String.raw`f_i(n) = O(f_{i+1}(n))`;
+
+  
+</script>
+
+### Problem 1. [20 points] 
+
+Order the following functions by asymptotic dominance. That is, give an ordering <Math formula="f_1, f_2, \ldots" />, such that for all <Math formula="i \geq 1" />, we have <Math formula={bigO} />.
+
+- <Math formula="f(n) =" /> <Math formula={exponential2n} />
+- <Math formula="f(n) =" /> <Math formula={linearThousand} />
+- <Math formula="f(n) =" /> <Math formula={nLogN} />
+- <Math formula="f(n) =" /> <Math formula={nSquared} />
+- <Math formula="f(n) =" /> <Math formula={doubleExponential} />
+- <Math formula="f(n) =" /> <Math formula={logN} />
+- <Math formula="f(n) =" /> <Math formula={logLogN} />
+- <Math formula="f(n) =" /> <Math formula={nTimesLogN} />
+
+1. <Math formula="f_1 = " /> 

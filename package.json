@@ -42,7 +42,10 @@
 	"dependencies": {
 		"@iconify/json": "^2.2.376",
 		"@lucide/svelte": "^0.540.0",
+		"katex": "^0.16.22",
 		"lucide-svelte": "^0.540.0",
+		"rehype-katex": "^7.0.1",
+		"remark-math": "^6.0.0",
 		"theme-change": "^2.5.0",
 		"unplugin-icons": "^22.2.0"
 	}

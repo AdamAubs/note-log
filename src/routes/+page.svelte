@@ -27,12 +27,12 @@
 	</section>
 
 	<!-- Lower section -->
-	<section class="grid w-full grid-cols-1 items-center justify-items-center gap-4 md:grid-cols-2">
-		<div class="flex flex-col justify-center">
+	<section class="grid w-full grid-cols-1 items-start justify-items-center gap-4 md:grid-cols-2">
+		<div class="flex flex-col justify-start">
 			<h2 class="mb-3 border-b border-gray-300 pb-1 text-center text-2xl font-bold">Projects</h2>
 			<FileTree tree={projectFileTree} prefix={[]} />
 		</div>
-		<div class="flex flex-col justify-center">
+		<div class="flex flex-col justify-start">
 			<h2 class="mb-3 border-b border-gray-300 pb-1 text-center text-2xl font-bold">Notes</h2>
 			<FileTree tree={notesFileTree} prefix={[]} />
 		</div>

@@ -1,0 +1,9 @@
+
+---
+title: Lab 1 - Blinking an LED
+description: blinking an LED
+author: Adam Aubry
+date: '2025-08-31'
+---
+
+

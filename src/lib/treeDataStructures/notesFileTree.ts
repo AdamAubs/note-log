@@ -70,11 +70,6 @@ export const notesFileTree = [
 								type: 'file'
 							}
 						]
-					},
-					{
-						name: 'Trees',
-						type: 'folder',
-						children: []
 					}
 				]
 			}
@@ -94,9 +89,14 @@ export const notesFileTree = [
 						type: 'file'
 					},
 					{
-						name: 'Computer Speak',
-						path: '/notes/school/computerSpeak',
-						type: 'file'
+						name: 'Homework',
+						type: 'folder',
+						children: []
+					},
+					{
+						name: 'Lecture review',
+						type: 'folder',
+						children: []
 					}
 				]
 			},
@@ -105,9 +105,16 @@ export const notesFileTree = [
 				type: 'folder',
 				children: [
 					{
-						name: 'Setting up the Arduino',
-						path: '/notes/school/arduinoSetup',
-						type: 'file'
+						name: 'Lab',
+						type: 'folder',
+						children: [
+							// Not ready to be published
+							// {
+							// 	name: 'Lab 01',
+							// 	path: '/notes/school/compDesginlab1',
+							// 	type: 'file'
+							// }
+						]
 					}
 				]
 			},
@@ -119,14 +126,25 @@ export const notesFileTree = [
 						name: 'Homework',
 						type: 'folder',
 						children: [
-							{
-								name: 'Homework 1',
-								path: '/notes/school/compAlgoHw1',
-								type: 'file'
-							}
+							// Not ready to be published
+							// {
+							// 	name: 'Homework 1',
+							// 	path: '/notes/school/compAlgoHw1',
+							// 	type: 'file'
+							// },
+							// {
+							// 	name: 'Homework 2',
+							// 	path: '/notes/school/compAlgoHw2',
+							// 	type: 'file'
+							// }
 						]
 					}
 				]
+			},
+			{
+				name: 'Music Theory',
+				type: 'folder',
+				children: []
 			}
 		]
 	},

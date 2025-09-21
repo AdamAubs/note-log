@@ -11,3 +11,13 @@ date: '2025-09-02'
 
 	import { base } from '$app/paths';
 </script>
+
+
+<SimpleFlashCard  question="What is a Motherboard?" answer="A printed circuit board that contains the principal components of a computer"/>
+<SimpleFlashCard  question="What speeds are Motherboard measured in to help classify how fast they can transfer data?" answer="megahertz (MHz) or gigahertz (GHz)"/>
+<SimpleFlashCard  question="What speeds due volatile storage devices like CPU cache and system RAM typically operate at?" answer="gigahertz (GHz)"/>
+<SimpleFlashCard  question="What speeds due non-volatile storage devices typically operate at?" answer="megahertz (MHz)"/>
+
+<SimpleFlashCard  question="What are the different form factors that motherboards come in?" answer="ATX, Mini-ATX, microATX, Mini-ITX"/>
+<SimpleFlashCard  question="What does ATX stand for?" answer="Advanced Technology eXtended"/>
+<SimpleFlashCard  question="What does ITX stand for?" answer="Information Technology eXtended"/>

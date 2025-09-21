@@ -1,0 +1,8 @@
+---
+title: Homework 1 - Performance and Benchmarks
+description: Questions about determining how to measure a CPU's performance
+author: Adam Aubry
+date: '2025-09-04'
+---
+
+

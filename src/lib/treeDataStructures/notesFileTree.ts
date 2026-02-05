@@ -94,7 +94,7 @@ export const notesFileTree = [
 							},
 							{
 								name: 'Homework 3',
-								path: '/notes/school/computerArch/ompArchHw3',
+								path: '/notes/school/computerArch/compArchHw3',
 								type: 'file'
 							},
 							{
@@ -104,7 +104,7 @@ export const notesFileTree = [
 							},
 							{
 								name: 'Homework 5',
-								path: '/notes/school/computerArch/ompArchHw5',
+								path: '/notes/school/computerArch/compArchHw5',
 								type: 'file'
 							}
 						]
@@ -131,7 +131,7 @@ export const notesFileTree = [
 						children: [
 							{
 								name: 'Lab 04',
-								path: '/notes/school/computerDesign/compDesginlab4',
+								path: '/notes/school/computerDesign/compDesignlab4',
 								type: 'file'
 							}
 						]

@@ -1,4 +1,3 @@
-
 ---
 title: Lab 1 - Blinking an LED
 description: blinking an LED

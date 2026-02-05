@@ -13,32 +13,32 @@ export const notesFileTree = [
 						children: [
 							{
 								name: 'Understanding Data Measurements',
-								path: '/notes/personal/cableTypeDataMeasurements',
+								path: '/notes/personal/comptia-aplus/cableTypeDataMeasurements',
 								type: 'file'
 							},
 							{
 								name: 'Exterior of a PC',
-								path: '/notes/personal/exteriorOfAPC',
+								path: '/notes/personal/comptia-aplus/exteriorOfAPC',
 								type: 'file'
 							},
 							{
 								name: 'USB Connector Types',
-								path: '/notes/personal/usbConnectorTypes',
+								path: '/notes/personal/comptia-aplus/usbConnectorTypes',
 								type: 'file'
 							},
 							{
 								name: 'USB Cables',
-								path: '/notes/personal/usbCables',
+								path: '/notes/personal/comptia-aplus/usbCables',
 								type: 'file'
 							},
 							{
 								name: 'Video Cables',
-								path: '/notes/personal/videoCables',
+								path: '/notes/personal/comptia-aplus/videoCables',
 								type: 'file'
 							},
 							{
 								name: 'Storage Cables',
-								path: '/notes/personal/storageCables',
+								path: '/notes/personal/comptia-aplus/storageCables',
 								type: 'file'
 							}
 						]
@@ -49,7 +49,7 @@ export const notesFileTree = [
 						children: [
 							{
 								name: 'Motherboard Basics',
-								path: '/notes/personal/motherboardBasics',
+								path: '/notes/personal/comptia-aplus/motherboardBasics',
 								type: 'file'
 							}
 						]
@@ -66,7 +66,7 @@ export const notesFileTree = [
 						children: [
 							{
 								name: 'Koko Eating Bananas',
-								path: '/notes/personal/kokoEatingBananas',
+								path: '/notes/personal/leetcode/kokoEatingBananas',
 								type: 'file'
 							}
 						]
@@ -84,19 +84,40 @@ export const notesFileTree = [
 				type: 'folder',
 				children: [
 					{
-						name: 'WTF is x86, RISC-V, and ARM?',
-						path: '/notes/school/wtfisx86RISC-VARM',
-						type: 'file'
-					},
-					{
 						name: 'Homework',
 						type: 'folder',
-						children: []
+						children: [
+							{
+								name: 'Homework 2',
+								path: '/notes/school/computerArch/homework2',
+								type: 'file'
+							},
+							{
+								name: 'Homework 3',
+								path: '/notes/school/computerArch/ompArchHw3',
+								type: 'file'
+							},
+							{
+								name: 'Homework 4',
+								path: '/notes/school/computerArch/compArchHw4',
+								type: 'file'
+							},
+							{
+								name: 'Homework 5',
+								path: '/notes/school/computerArch/ompArchHw5',
+								type: 'file'
+							}
+						]
 					},
 					{
-						name: 'Lecture review',
+						name: 'Questions From Text book',
 						type: 'folder',
-						children: []
+						children: [
+							{
+								name: 'Understanding Instruction Set architectures',
+								path: '/notes/school/computerArch/ISABookExercises'
+							}
+						]
 					}
 				]
 			},
@@ -108,12 +129,11 @@ export const notesFileTree = [
 						name: 'Lab',
 						type: 'folder',
 						children: [
-							// Not ready to be published
-							// {
-							// 	name: 'Lab 01',
-							// 	path: '/notes/school/compDesginlab1',
-							// 	type: 'file'
-							// }
+							{
+								name: 'Lab 04',
+								path: '/notes/school/computerDesign/compDesginlab4',
+								type: 'file'
+							}
 						]
 					}
 				]
@@ -132,19 +152,19 @@ export const notesFileTree = [
 							// 	path: '/notes/school/compAlgoHw1',
 							// 	type: 'file'
 							// },
-							// {
-							// 	name: 'Homework 2',
-							// 	path: '/notes/school/compAlgoHw2',
-							// 	type: 'file'
-							// }
+							{
+								name: 'Homework 2',
+								path: '/notes/school/computerAlgo/compAlgoHw2',
+								type: 'file'
+							},
+							{
+								name: 'Homework 3',
+								path: '/notes/school/computerAlgo/compAlgoHw3',
+								type: 'file'
+							}
 						]
 					}
 				]
-			},
-			{
-				name: 'Music Theory',
-				type: 'folder',
-				children: []
 			}
 		]
 	},

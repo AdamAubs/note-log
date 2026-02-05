@@ -1,0 +1,130 @@
+---
+title: Homework 3
+description: Computer Architecture Homework 3
+author: Adam Aubry
+date: '2025-09-29'
+---
+
+<script>
+	import { base } from '$app/paths';
+</script>
+
+
+# Question 1:
+
+![problem 1]({base}/compArchHw/hw3Problem1.png)
+
+### Information needed to be encoded in a machine-level instruction:
+- operation code (opcode)
+- Address field (for operands) 
+- The address specifier (for addressing modes) is only needed for ISAs with complex addressing modes
+
+### For CISC ISAs such as Intel x86, why are address specifiers are needed?
+- Address specifiers help how operands are located and accessed in memory. They help
+operations like array indexing with scaling, accessing local variables, and pointer deferenincing
+complete using a smaller amount of instructions. 
+
+# Question 2:
+
+![problem 1]({base}/compArchHw/hw3Problem2.png)
+
+### a.) `add $s2, $t1, $t2`
+- R-type: opcode | rs | rt | rd | shamt | funct
+          6 bits | 5  | 5  | 5  | 5     | 6 bits
+- Format: `add rd, rs, rt`
+- `000000` = opcode for R-type
+- `01001` = $t1 (first source) = 9 = rs
+- `01010` = $t2 (second source) = 10 = rt
+- `10010` = $s2 (destination) = 18 = rd
+- `00000` = shamt (not used for add)
+- `100000` = funct code for add
+
+**Final answer:** 000000 01001 01010 10010 00000 100000
+
+### b.) `addi $s0, $s1, -25`
+- I-type: opcode | rs | rt | immediate
+          6 bits | 5  | 5  | 16 bits
+- Format: `addi rt, rs, imm`
+- `001000` = opcode for addi
+- `10001` = $s1 (source register) = 17 = rs
+- `10000` = $s0 (destination register) = 16 = rt
+- `1111111111100111` = -25 in 16-bit two's complement = immediate
+  - 25 in binary = `0000000000011001`
+  - Invert bits = `1111111111100110`
+  - Add 1 = `1111111111100111`
+
+**Final answer:** 001000 10001 10000 1111111111100111
+
+### c.) `lw $t2, -64($s1)`
+- I-type: opcode | rs | rt | immediate
+          6 bits | 5  | 5  | 16 bits
+- Format: `lw rt, offset(rs)`
+- `100011` = opcode for lw
+- `10001` = $s1 (base register) = 17 = rs
+- `01010` = $t2 (destination) = 10 = rt
+- `1111111111000000` = -64 in 16-bit two's complement = immediate
+
+**Final answer:** 100011 10001 01010 1111111111000000
+
+###  d.) `sw $s1, 48($t0)`
+- I-type: opcode | rs | rt | immediate
+- Format: `sw rt, offset(rs)`
+- `101011` = opcode for sw
+- `01000` = $t0 (base register) = 8 = rs
+- `10001` = $s1 (source register) = 17 = rt
+- `0000000000110000` = 48 in 16-bit binary = immediate
+
+**Final answer:** 101011 01000 10001 0000000000110000
+
+# Problem 2
+
+![problem 2]({base}/compArchHw/hw3Problem3.png)
+
+### a.) `add x10, x2, x4`
+- R-type: funct7 | rs2 | rs1 | funct3 | rd | opcode
+- format: `add rd, rs1, rs2`
+- `0000000` = funct7
+- `00100` = `x4` = rs2
+- `00010` = `x2` = rs1
+- `000` = funct3
+- `01010` = `x10` = rd
+- `0110011` = opcode
+
+**Final answer:** 0000000 00100 00010 000 01010 0110011
+
+### b.) `addi x7, x5, -25`
+- I-type: immediate | rs1 | funct3 | rd | opcode
+- Format `addi rd, rs1, immediate`
+- `111111100111` = immediate
+- `00101` = rs1
+- `000` = funct3
+- `00111` = rd
+- `0010011` = opcode
+
+**Final Answer:** 111111100111 00101 000 00111 0010011
+
+### c.) `lw x8, -64(x3)`
+- I-type: immediate | rs1 | funct3 | rd | opcode
+- Format `lw rd, offset(rs1)`
+- `111111000000` = -64 in 12-bit two's complement = immediate
+- `00011` = x3 = rs1
+- `010` = funct3
+- `01000` = x8 = rd
+- `0000011` = opcode
+
+**Final Answer:** 111111000000 00011 010 01000 0000011
+
+### d.) `sw x9, 48(x1)`
+- S-type: imm[11:5] | rs2 | rs1 | funct3 | imm[4:0] | opcode
+- Format `sw rs2, offset(rs1)`
+- `000000110000` = 48 in 12-bit binary = immediate
+- `0000001` = imm[11:5] (upper 7 bits)
+- `01001` = x9 = rs2
+- `00001` = x1 = rs1
+- `010` = funct3
+- `10000` = imm[4:0] (lower 5 bits)
+- `0100011` = opcode
+
+**Final Answer:** 0000001 01001 00001 010 10000 0100011
+
+

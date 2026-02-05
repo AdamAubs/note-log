@@ -1,0 +1,174 @@
+---
+title: Homework 3
+description: Computer Algorithm Homework 3
+author: Adam Aubry
+date: '2025-10-01'
+---
+
+<script>
+	import { base } from '$app/paths';
+</script>
+
+![problem 1]({base}/algoHwQuestions/hw3Problem1.png)
+
+$$
+\begin{aligned}
+&\text{For each edge }(u,v)\in E:\\
+&\qquad \ell(u,v) \gets w(v),\quad \ell(v,u) \gets w(u).\\[6pt]
+&\text{Initialize:}\\
+&\qquad pq \gets \texttt{Create-Priority-Queue}(),\\
+&\qquad \pi(v) \gets \infty\ \text{for all }v\neq s,\quad \pi(s)\gets 0,\\
+&\qquad \text{insert each }v\in V\text{ into }pq\text{ with key }\pi(v).\\[6pt]
+&\text{While }pq\text{ is not empty:}\\
+&\qquad u \gets \texttt{DEL-MIN}(pq).\\
+&\qquad\text{For each edge }(u,v)\in E\text{ leaving }u:\\
+&\qquad\qquad\text{if }\pi(v) > \pi(u) + \ell(u,v)\text{ then}\\
+&\qquad\qquad\qquad \texttt{DECREASE-KEY}(pq, v, \pi(u)+\ell(u,v)),\\
+&\qquad\qquad\qquad \pi(v) \gets \pi(u) + \ell(u,v),\quad \operatorname{pred}(v) \gets u.\\[6pt]
+&\text{Reconstruct shortest path:}\\
+&\qquad \texttt{shortestPath} \gets \varnothing,\quad curr \gets t;\\
+&\qquad \text{while }curr \neq s:\\
+&\qquad\qquad \text{prepend }curr\text{ to }\texttt{shortestPath},\quad curr \gets \operatorname{pred}(curr);\\
+&\qquad \text{prepend }s\text{ to }\texttt{shortestPath}.
+\end{aligned}
+$$
+
+![problem 2]({base}/algoHwQuestions/hw3Problem2.png)
+
+$$
+\begin{align*}
+& \text{Create a new graph } G' = (V', E') \text{ with (city, time) pairs as vertices} \\
+& \\
+&\text{Build vertices:}\\
+& \qquad\textbf{FOREACH } \text{vertex } c \in V: \\
+& \qquad\qquad \textbf{FOR } t = 0 \text{ to } T: \\
+& \qquad\qquad\qquad \text{Add pair } (c, t) \text{ to } V' \\
+& \\
+&\text{Add flight edges:}\\
+& \qquad\textbf{FOREACH } \text{edge } (u, v) \in E: \\
+& \qquad\qquad \textbf{FOREACH } \text{flight } (\text{departure\_time}, \text{cost}) \in \text{timetable}[u][v]: \\
+& \qquad\qquad \text{arrival\_time} = \text{departure\_time} + d(u, v) \\
+& \qquad\qquad \textbf{IF } \text{arrival\_time} \leq T: \\
+& \qquad\qquad\qquad \text{Add } ((u, \text{departure\_time}), (v, \text{arrival\_time}), \text{cost}) \text{ to } E' \\
+& \\
+& \text{Add waiting edges:}\\
+& \qquad\textbf{FOREACH } \text{vertex } c \in V: \\
+& \qquad\qquad \textbf{FOR } t = 0 \text{ to } T - 1: \\
+& \qquad\qquad \text{Add } ((c, t), (c, t+1), 0) \text{ to } E' \\
+& \\
+& \text{Run Dijkstra on }G': \\
+& \qquad \text{distances, predecessors} = \text{Dijkstra}(G', (s, 0)) \\
+& \\
+& \text{Find minimum cost and destination node}: \\
+& \qquad\text{min\_cost} = \infty \\
+& \qquad\text{final\_destination\_node} = \text{null} \\
+& \qquad\textbf{FOR } t = 0 \text{ to } T: \\
+& \qquad\quad \textbf{IF } \text{distances}[(v, t)] < \text{min\_cost}: \\
+& \qquad\qquad \text{min\_cost} = \text{distances}[(v, t)] \\
+& \qquad\qquad \text{final\_destination\_node} = (v, t) \\
+& \\
+& \text{Backtrack to get the cheapest route }: \\
+& \qquad\text{route} = \text{new List} \\
+& \qquad\text{current\_node} = \text{final\_destination\_node} \\
+& \qquad\textbf{WHILE } \text{current\_node} \neq \text{null}: \\
+& \qquad\quad \text{Add } \text{current\_node} \text{ to the front of the route list} \\
+& \qquad\quad \text{current\_node} = \text{predecessors}[\text{current\_node}] \\
+& \\
+& \textbf{Return } \text{route}
+\end{align*}
+$$
+
+![problem 3]({base}/algoHwQuestions/hw3Problem3.png)
+
+## a.)
+
+$$
+\begin{aligned}
+&\textbf{Initialization:}\\
+&\qquad \text{For all states }(i,j,dir):\quad \text{dist}[i,j,dir]\gets\infty,\quad \text{pred}[i,j,dir]\gets\text{null}.\\
+&\qquad \text{Set }\text{dist}[1,1,\text{North}]\gets 0.\\
+&\qquad \text{PQ}\gets\texttt{Create-Min-PQ}(),\quad \text{insert every state }(i,j,dir)\text{ into PQ with key }\text{dist}[\cdot].\\[6pt]
+&\textbf{Main loop:}\\
+&\qquad \text{while }\text{PQ}\text{ is not empty:}\\
+&\qquad\qquad u\gets\texttt{EXTRACT-MIN}(\text{PQ})\quad\text{(where }u=(i,j,dir)\text{)}.\\
+&\qquad\qquad \text{For each valid neighbor state }v\text{ of }u\text{ (forward, left, right):}\\
+&\qquad\qquad\qquad \text{if }\text{dist}[u]+1<\text{dist}[v]\text{ then}\\
+&\qquad\qquad\qquad\qquad \text{dist}[v]\gets\text{dist}[u]+1,\quad \text{pred}[v]\gets u,\\
+&\qquad\qquad\qquad\qquad \texttt{DECREASE-KEY}(\text{PQ},v,\text{dist}[v]).\\[6pt]
+&\textbf{Find the solution:}\\
+&\qquad d^*=\min\{\text{dist}[n,n,\text{North}],\text{dist}[n,n,\text{East}],\text{dist}[n,n,\text{South}],\text{dist}[n,n,\text{West}]\}.\\
+&\qquad \text{If }d^*=\infty\text{ then the goal is unreachable. Otherwise, reconstruct the shortest path by backtracking from the} \\
+&\qquad \text{state among }\{(n,n,*)\}\text{ with value }d^*\text{ using the }\text{pred}\text{ pointers.}
+\end{aligned}
+$$
+
+## b.)
+
+$$
+\begin{aligned}
+&\textbf{Initialization:}\\
+&\qquad Q\gets\texttt{Create-Queue}(),\quad \text{enqueue}(Q,\text{start\_state}),\\
+&\qquad \text{dist}[\text{start\_state}]\gets 0,\quad \text{pred}[\text{start\_state}]\gets \text{null}.\\[6pt]
+&\textbf{Main loop (BFS over joint states):}\\
+&\qquad \text{while }Q\text{ is not empty:}\\
+&\qquad\qquad U_{curr}\gets\text{dequeue}(Q).\\
+&\qquad\qquad \text{if }U_{curr}\text{ is the goal state then}\\
+&\qquad\qquad\qquad \text{reconstruct and return path by backtracking using }\text{pred}\text{ (length }\text{dist}[U_{curr}]\text{)}.\\[6pt]
+&\qquad\qquad \text{Generate all combined moves }M\text{ (size }3^k\text{) for the }k\text{ robots.}\\
+&\qquad\qquad \text{for each }m\in M:\\
+&\qquad\qquad\qquad U_{next}\gets\text{apply}(m,U_{curr}).\\
+&\qquad\qquad\qquad \text{Check validity: }U_{next}\text{ is valid if} \\
+&\qquad\qquad\qquad\qquad\text{(i) every robot position is in-bounds,}\\
+&\qquad\qquad\qquad\qquad\text{(ii) no robot is on a static obstacle,}\\
+&\qquad\qquad\qquad\qquad\text{(iii) no two robots occupy the same cell,}\\
+&\qquad\qquad\qquad\qquad\text{(iv) no two robots swap positions in this step.}\\
+&\qquad\qquad\qquad \text{If }U_{next}\text{ is valid and not visited:}\\
+&\qquad\qquad\qquad\qquad \text{dist}[U_{next}]\gets\text{dist}[U_{curr}]+1,\\
+&\qquad\qquad\qquad\qquad \text{pred}[U_{next}]\gets U_{curr},\\
+&\qquad\qquad\qquad\qquad \text{enqueue}(Q,U_{next}).\\[6pt]
+&\textbf{Termination:}\\
+&\qquad \text{If the loop ends without reaching the goal, return ``No path exists.''}
+\end{aligned}
+$$
+
+![problem 4]({base}/algoHwQuestions/hw3Problem4.png)
+
+## a & b
+
+$$
+\begin{aligned}
+&\textbf{Initialize:}\\
+&\qquad \text{Make a disjoint-set (Union-Find) }UF\text{ with a separate set for each }v\in V,\\
+&\qquad T\gets\varnothing.\\[6pt]
+&\textbf{Process critical edges }F:\\
+&\qquad \text{for each }(u,v)\in F:\\
+&\qquad\qquad \text{if }\operatorname{find } {UF}(u)=\operatorname{find } {UF}(v)\\
+&\qquad\qquad\qquad \text{\textbf{error}: critical edges in }F\text{ form a cycle},\\
+&\qquad\qquad \text{else}\\
+&\qquad\qquad\qquad T\gets T\cup\{(u,v)\},\quad \operatorname{union } {UF}(u,v).\\[6pt]
+&\textbf{Process remaining edges:}\\
+&\qquad R\gets E\setminus F,\\
+&\qquad \text{sort }R\text{ by non-decreasing weight},\\
+&\qquad \text{for each }(u,v)\in R:\\
+&\qquad\qquad \text{if }\operatorname{find} {UF}(u)\neq\operatorname{find} {UF}(v)\text{ then}\\
+&\qquad\qquad\qquad T\gets T\cup\{(u,v)\},\quad \operatorname{union} {UF}(u,v).\\[6pt]
+&\textbf{Return: }T.
+\end{aligned}
+$$
+
+## c.)
+- Processing Critical Edges
+  - There are |F| critical edges
+  - loop through each edges and perform union-find
+  - union-find is nearly constant time on average
+  - Since F is a subset of E it will take at most O(|E|) time
+
+- Sorting the Remaining Edges:
+  - Sorting the edges that are not in F. |E| - |F| which is in the order of O(|E|)
+  - To sort the remaining edges it will take O(|E|log|E|) time
+
+- Looping through Remaining Edges:
+  - This will take approximately O(|E|) time.
+
+Combining these gives the total time of O(|E|) + O(|E|log|E|) + O(|E|).
+The dominant term is O(|E|log|E|) which give the overall running time of the algorithm.

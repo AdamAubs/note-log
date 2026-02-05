@@ -1,0 +1,225 @@
+---
+title: Homework 4
+description: Computer Architecture Homework 4
+author: Adam Aubry
+date: '2025-10-14'
+---
+
+<script>
+	import { base } from '$app/paths';
+</script>
+
+<img src="{base}/compArchHw/hw5Problem1.png" alt="problem 1" width="400" height="200" />
+
+## a.)
+Show all the data, anti and output dependence. Note: dependent instructions may not be next
+to each other.
+
+
+### Data (RAW)
+An instruction needs to read a value that a previous instruction writes. 
+This is a "true" dependency because the actual data is being passed between instructions.
+```
+i1 → i2: i1 writes f0, i2 reads f0
+i2 → i4: i2 writes f4, i4 reads f4
+i3 → i4: i3 writes f6, i4 reads f6
+i4 → i5: i4 writes f6, i5 reads f6
+i6 → i8: i6 writes x1, i8 reads x1
+i8 → i9: i8 writes x4, i9 reads x4
+
+i6 → i1 (next iteration): i6 writes x1, i1 reads x1
+i7 → i3 (next iteration): i7 writes x2, i3 reads x2
+i7 → i5 (next iteration): i7 writes x2, i5 reads x2
+```
+
+### Anti (WAR)
+An instruction wants to write to a register or memory location that a previous instruction is still scheduled to read
+```
+i1 → i6: i1 reads x1, i6 writes x1
+i3 → i7: i3 reads x2, i7 writes x2
+i5 → i7: i5 reads x2, i7 writes x2
+
+i2 → i1 (next iteration): i2 reads f0, i1 writes f0
+i4 → i2 (next iteration): i4 reads f4, i2 writes f4
+i5 → i4 (next iteration): i5 reads f6, i4 writes f6
+```
+
+### Output (WAW)
+Two instructions write to the same register or memory location. 
+Within a Single Loop Iteration:
+```
+i3 → i4: i3 writes to f6, i4 writes to f6
+```
+
+## b.)
+Assume a single-issue pipeline. Show how the loop would look both unscheduled by the
+compiler and after compiler scheduling, including any stalls or idle clock cycles. What is the
+execution time (in cycles) per element of the result vector Y, unscheduled and scheduled?
+
+### Unscheduled
+
+| Clock Cycle | Instruction Executing      | Reason for stall                                 |
+|-------------|----------------------------|--------------------------------------------------|
+| 1           | `fld f0, 0(x1)`            |                  								  |
+| 2           |  stall                     |  fmul.d need the result of fld f0                |
+| 3           | `fmul.d f4, f0, f2`        |                                                  |
+| 4           | `fld f6, 0(x2)`            | 												  |
+| 5           | stall                      |  fadd.d needs the result of fmul.d. The latency is 8 cycles |
+| 6           | stall                      |												  |
+| 7           | stall                      |												  |
+| 8           | stall                      |												  |
+| 9           | stall                      |												  |
+| 10          | stall                      |												  |
+| 11          | stall                      | (7 stalls + the fld at cycle 4 fill the 8 cycle latency) |
+| 12          | `fadd.d f6, f4, f6`        | The result of fmul.d is now ready. The result of fld f6 is also ready |
+| 13          | stall                      | fsd needs the result of fadd.d. Latency = 4 cycles |
+| 14          | stall                      |													|
+| 15          | stall                      |													|
+| 16          | stall                      |													|
+| 17          | `fsd f6, 0(x2)`            | 													|
+| 18          | `addi x1, x1 8`            | 													|
+| 19          | `addi x2, x2, 8`            | 													|
+| 20          | `sltu x4, x1, x3`            | 													|
+| 21          | stall                      | bnez needs the result of sltu. 				    |
+| 22          | `bnez x4, foo`             | Loop iteration ends 								|
+
+- The total execution time for one element of the vector Y is **22 clock cycles**.
+
+### Scheduled
+
+| Clock Cycle | Instruction Executing      | Comment                                          |
+|-------------|----------------------------|--------------------------------------------------|
+| 1           | `fld f0, 0(x1)`            |                  								  |
+| 2           | `fld f6, 0(x2)`            |  Move the second load up                         |
+| 3           | `fmul.d f4, f0, f2`        |                                                  |
+| 4           | `addi x1, x1 8`			   | Fill stall with independent operation            |
+| 5           | `sltu x4, x1, x3`          | Fill another stall slot                          |
+| 6           | stall                      | must wait for `fmul.d`	to finish                 |
+| 7           | stall                      |												  |
+| 8           | stall                      |												  |
+| 9           | stall                      |												  |
+| 10          | stall                      |												  |
+| 11          | stall                      |                                                  |
+| 12          | `fadd.d f6, f4, f6`        |                                                  |
+| 13          | stall                      |                                                  |
+| 14          | stall                      |													|
+| 15          | stall                      |													|
+| 16          | stall                      |													|
+| 17          | `fsd f6, 0(x2)`            | 													|
+| 18          | `addi x2, x2, 8`           | 													|
+| 19          | `bnez x4, foo`             | Loop iteration ends 								|
+
+
+- The total execution time for one element of the vector Y is **19 clock cycles**.
+
+## c.)
+Assume a single-issue pipeline. Unroll the loop by a factor of 4 to schedule it without any
+stalls, collapsing the loop overhead instructions. Show the unrolled and scheduled instruction
+sequence. What is the execution time per element of the result? You can assume that the number of
+iterations is always a multiple of the unrolled loop body.
+
+
+| Clock Cycle | Instruction Executing      | Comment                                          |
+|-------------|----------------------------|--------------------------------------------------|
+| 1           | `fld f0, 0(x1)`            |  Load the first X element                		  |
+| 2           | `fld f6, 0(x2)`            |  Load the second X element                       |
+| 3           | `fld f20, 16(x1)`          |  Load the third X element                        |
+| 4           | `fld f30, 24(x1)`		   |  Load the fourht X element                       |
+| 5           | `fmul.d f4, f0, f2`        |  First fld is done. Start the first multiply. This begins an 8-cycle latency window. |
+| 6           | `fmul.d f14, f10, f2`      |  Second fld is done. Start second multiply                |
+| 7           | `fmul.d f24, f20, f2`      |  Third fld is done. Start third multiply												  |
+| 8           | `fmul.d f34, f30, f2`      |  Fourth fld is done. Start fourth multiply												  |
+| 9           | `fld f6, 0(x2)`            |  Fill the fmul delay slots by loading the Y values												  |
+| 10          | `fld f16, 8(x2)`           |  												  |
+| 11          | `fld f26, 16(x2)`          |                                                  |
+| 12          | `fld f36, 24(x2)`          |                                                  |
+| 13          | `addi x1, x1, 32`          | Last slot in the first fmul latency window. Update the X pointer                                                  |
+| 14          | `fadd.d f8, f4, f6`        | First fmul result is ready. Start the first add. This begins 4-cycle latency window													|
+| 15          | `fadd.d f18, f14, f16`     | start second add													|
+| 16          | `fadd.d f28, f24, f26`     | start third add													|
+| 17          | `fadd.d f38, f34, f36`     | start fourth add 													|
+| 18          | `addi x2, x2, 32`          | Fill fadd delay slot. Update the Y pointer before the stores 													|
+| 19          | `sltu x4, x1, x3`          | Fill another fadd delay slot								|
+| 20          | `fsd f8, -32(x2)`          | First fadd is done. Store result using new x2 pointer		|
+| 21          | `fsd f18, -24(x2)`         | Second fadd is done. 	|
+| 22          | `fsd f28, -16(x2)`         | Third fadd is done. 	|
+| 23          | `fsd f38, -8(x2)`          | Fourth fadd is done.   |
+| 24          | `bnez x4, foo`             | Branch. The latency from sltu (cycle 19) is met.   |
+
+- The unrolled and scheduled loop processes 4 elements in a total of 24 cycles
+
+**Execution time per element** = Total Cycles / Number of Elements = 24 / 4 = **6 cycles**
+
+![problem 1]({base}/compArchHw/hw5Problem2.png)
+
+```C
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
+
+// Define the size of the arrays
+#define N 200000
+
+// Function to get the current time in seconds
+double get_time() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec + tv.tv_usec / 1000000.0;
+}
+
+
+int main() {
+    // Using static to avoid stack overflow for large arrays
+    static double x[N], y[N], y_unrolled[N];
+    double a;
+
+    // Initialize arrays with random numbers
+    for (int i = 0; i < N; i++) {
+        x[i] = (double)rand() / RAND_MAX;
+        y[i] = (double)rand() / RAND_MAX;
+
+        y_unrolled[i] = y[i];
+    }
+    a = (double)rand() / RAND_MAX;
+
+    printf("Starting DAXPY benchmark with N = %d\n", N);
+
+    double start_time = get_time();
+
+    for (int i = 0; i < N; i++) { 
+        y[i] = a * x[i] + y[i];   
+    }
+
+    double end_time = get_time();
+    double standard_loop_time = end_time - start_time;
+    printf("Standard loop execution time:   %f seconds\n", standard_loop_time);
+
+    start_time = get_time();
+
+    // Loop unrolled by a factor of 4 
+    for (int i = 0; i < N; i += 4) {
+        y_unrolled[i]   = a * x[i]   + y_unrolled[i];
+        y_unrolled[i+1] = a * x[i+1] + y_unrolled[i+1];
+        y_unrolled[i+2] = a * x[i+2] + y_unrolled[i+2];
+        y_unrolled[i+3] = a * x[i+3] + y_unrolled[i+3];
+    }
+
+    end_time = get_time();
+    double unrolled_loop_time = end_time - start_time;
+    printf("Unrolled loop execution time:   %f seconds\n", unrolled_loop_time);
+
+    printf("\nComparison:\n");
+    printf("The unrolled loop was %.2f times faster.\n", standard_loop_time / unrolled_loop_time);
+
+    return 0;
+}
+```
+
+```bash
+Starting DAXPY benchmark with N = 200000
+Standard loop execution time:   0.000348 seconds
+Unrolled loop execution time:   0.000257 seconds
+
+Comparison:
+The unrolled loop was 1.35 times faster.
+```

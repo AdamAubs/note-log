@@ -1,0 +1,570 @@
+---
+title: Homework 2
+description: Questions about determining how to measure a CPU's performance
+author: Adam Aubry
+date: '2025-09-21'
+---
+<script>
+	import { base } from '$app/paths';
+</script>
+
+# Q1. 
+
+![question 1]({base}/compArchHw/question1.png)
+
+Figure A.29 (Page A-42)
+![Figure A-29]({base}/compArchHw/Figure_A-29.png)
+
+$$
+\text{Effective CPI} = \sum(\text{frequency of instruction type} \times \text{CPI for that instruction type})
+$$
+
+- **CPI**: Cycles Per Instruction
+
+### 1. Find the average frequencies of astar, gobmk, and sjeng:
+
+- **Loads:** 
+$$
+\frac{28\% + 21\% + 19\%}{3} = 22\%
+$$
+
+- **Stores:**
+$$
+\frac{6\% + 12\% + 7\%}{3} = 8.33\%
+$$
+
+- **Branches:**
+$$
+\frac{18\% + 14\% + 15\%}{3} = 15.67\%
+$$
+
+- **Jumps:**
+$$
+\frac{2\% + 2\% + 3\%}{3} = 2.33\%
+$$
+
+- **ALU operations:**
+$$
+\frac{46\% + 50\% + 56\%}{3} = 50.67\%
+$$
+
+- Since 80% of branches are taken and 20% are not taken:
+
+- **Taken branches:**
+$$
+15.67\% \times 0.80 = 12.53\%
+$$
+
+- **Not taken branches:**
+$$
+15.67\% \times 0.20 = 3.13\%
+$$
+
+- **Other instructions:**
+$$
+100\% - 22.67\% - 8.33\% - 15.67\% - 2.33\% - 50.67\% = 0.33\%
+$$
+
+### 2. Multiply each frequency by its corresponding CPI:
+
+- **ALU operations:** 
+$$
+50.67\% \times 1.0 =  0.5067
+$$
+
+- **Loads:**
+$$
+22.67\% \times 4.0 = 0.9068
+$$
+
+- **Stores:**
+$$
+8.33\% \times 3.0 = 0.2499
+$$
+
+- **Branches:**
+
+    - **Taken:**
+    $$
+    12.53\% \times 3.5\% = 0.4389
+    $$
+
+    - **Not taken:**
+    $$
+    3.13\% \times 2.5\% = 0.07825
+    $$
+
+- **Jumps:**
+$$
+2.33\% \times 2.0\% = 0.0466
+$$
+
+- **Other instructions:**
+$$
+0.33\% \times 6.0\% = 0.0198
+$$
+
+### 3. Sum to get Effective CPI 
+
+$$
+Effective CPI = 0.5067 + 0.9068 + 0.2499 + 0.4389 + 0.07825 + 0.0466 + 0.0198 = 2.24695
+$$
+
+- On average, each instruction in this processor implementation takes
+**2.25** clock cycles to complete, given this particular instruction mix
+and specified CPI values for each instruction type.
+
+# Q.2
+
+![question 1]({base}/compArchHw/question2.png)
+
+- A, B, C, D, E, and F reside in memory 
+- Instruction operation codes are represented in **5 bits**
+- Memory addresses are **48 bits**
+- Data size is **32 bits**
+- Register addresses are **3 bits**
+
+# a.
+
+Figure A.2
+![Figure A.2]({base}/compArchHw/figure_A.2.png)
+
+### Stack Architecture
+
+`Push A` 
+- **1 memory address**
+- Operation code: 5 bits
+- Memory address A: 48 bits
+- Data size: 32 bits
+$$
+48 + 5 + 32 = 85 \text{ bits}
+$$
+
+`Push B` 
+- **1 memory address**
+- Operation code: 5 bits
+- Data size: 32 bits
+$$
+48 + 5 + 32 = 85 \text{ bits}
+$$
+
+`Add`
+- **0 memory addresses**
+- Operation code: 5 bits
+
+$$
+\text{5 bits}
+$$
+
+`Pop F`
+- **1 memory address**
+- Operation code: 5 bits
+- Memory address F: 48 bits
+- Data size: 32 bits
+$$
+48 + 5 + 32 = 85 \text{ bits}
+$$
+
+
+**Total code size for stack architecture:**
+$$
+85 + 85 + 5 + 85 = 260 \text{ bits}
+$$
+
+### Accumulator 
+
+`Load A` 
+- **1 memory address**
+- Operation code: 5 bits
+- Memory address A: 48 bits
+- Data size: 32 bits
+$$
+48 + 5 + 32 = 85 \text{ bits}
+$$
+
+`Add B` 
+- **1 memory address**
+- Operation code: 5 bits
+- Memory address B: 48 bits
+- Data size: 32 bits
+$$
+48 + 5 + 32 = 85 \text{ bits}
+$$
+
+`Store F`
+- **1 memory address**
+- Operation code: 5 bits
+- Memory address F: 48 bits
+- Data size: 32 bits
+$$
+48 + 5 + 32 = 85 \text{ bits}
+$$
+
+**Total code size for accumulator architecture:**
+$$
+85 + 85 + 85 = 255 \text{ bits}
+$$
+
+
+### Register (register-memory)
+
+`Load R1, A` 
+- **1 memory address**
+- **1 register address**
+- Operation code: 5 bits
+- Memory address A: 48 bits
+- Register address R1: 3 bits
+- Data size: 32 bits
+$$
+48 + 5 + 3 + 32 = 88 \text{ bits}
+$$
+
+`Add R3, R1, B` 
+- **1 memory address**
+- **2 register address**
+- Operation code: 5 bits
+- Memory address B: 48 bits
+- Register address R3: 3 bits
+- Register address R1: 3 bits
+- Data size: 32 bits
+$$
+48 + 5 + 3 + 3 + 32 = 91 \text{ bits}
+$$
+
+`Store R3, F`
+- **1 memory address**
+- **1 register address**
+- Operation code: 5 bits
+- Memory address F: 48 bits
+- Register address R3: 3 bits
+- Data size: 32 bits
+$$
+48 + 5 + 3 + 32 = 88 \text{ bits}
+$$
+
+**Total code size for register-memory architecture:**
+$$
+88 + 91 + 88 =  267 \text{ bits}
+$$
+
+### Register (load-store)
+
+`Load R1, A` 
+- **1 memory address**
+- **1 register address**
+- Operation code: 5 bits
+- Memory address A: 48 bits
+- Register address R1: 3 bits
+- Data size: 32 bits
+$$
+48 + 5 + 3 + 32 = 88 \text{ bits}
+$$
+
+`Load R2, B` 
+- **1 memory address**
+- **1 register address**
+- Operation code: 5 bits
+- Memory address B: 48 bits
+- Register address R2: 3 bits
+- Data size: 32 bits
+$$
+48 + 5 + 3 + 32 = 88 \text{ bits}
+$$
+
+`Add R3, R1, R2`
+- **3 register address**
+- Operation code: 5 bits
+- Register address R1: 3 bits
+- Register address R2: 3 bits
+- Register address R3: 3 bits
+- Data size: 32 bits
+$$
+5 + 3 + 3 + 3 + 32 = 46 \text{ bits}
+$$
+
+`Store R3, F`
+- **1 memory address**
+- **1 register address**
+- Operation code: 5 bits
+- Memory address F: 48 bits
+- Register address R3: 3 bits
+- Data size: 32 bits
+$$
+48 + 5 + 3 + 32 = 88 \text{ bits}
+$$
+
+**Total code size for load-store architecture:**
+$$
+88 + 88 + 46 + 88 =  310 \text{ bits}
+$$
+
+# b.
+
+## Stack Architecture
+
+```assembly
+Push A      
+Push B
+Add         ; A and B destroyed
+Store F     ; Save F to memory, pop result
+
+Push A      ; Load A again (overhead)
+Push C      
+Add         ; A and C destroyed
+Store D     ; Save D to memory
+
+Load F      ; Push F back onto stack (overhead)
+Load D      ; Push D onto stack (overhead)
+Add         ; D and F are destroyed
+Store E     
+```
+
+- **Total code size:**
+
+```
+Push A    → 5 + 48 = 53 bits
+Push B    → 5 + 48 = 53 bits  
+Add       → 5 bits
+Store F   → 5 + 48 = 53 bits
+
+Push A    → 5 + 48 = 53 bits
+Push C    → 5 + 48 = 53 bits
+Add       → 5 bits
+Store D   → 5 + 48 = 53 bits
+
+Load F    → 5 + 48 = 53 bits
+Load D    → 5 + 48 = 53 bits
+Add       → 5 bits
+Store E   → 5 + 48 = 53 bits
+```
+
+- **Total instruction fetches**
+$$
+\text{Total} = (9 \times 53) + (3 \times 5) = 492 \text{ bits} = 61.5 \text{ bytes}
+$$
+
+
+- **Total Instructions**: 12
+- **Overhead Instructions:** 3 
+    - Push A (2nd time)
+    - Load F
+    - Load D
+- **Bytes of instructions and data moved to/from memory:**
+    - **Loads**
+    $$
+    A + B + A + C + F + D = 6 \times 32 = 192 \text{ bits}
+    $$
+    - **Stores**
+    $$
+    F + D + E = 3 \times 32 = 96 \text{ bits}
+    $$
+    - **Total data moved:**
+    $$
+    288 \text{ bits} = 36 \text{ bytes}
+    $$
+    - **Total instruction fetches**
+    $$
+    61.5 \text{ bytes}
+    $$
+    - **Total memory traffic**
+    $$
+    \text{Total memory traffic} = 36 + 61.5 = 97.5 \text{ bytes}
+    $$
+
+- **Overhead data bytes:** 
+    $$
+    3 \times 32 = 96 \text{ bits} = 12 \text{ bytes}
+    $$
+
+## Accumulator Architecture
+
+```assembly
+Load A      
+Add B         ; A destroyed
+Store F       ; Save F to memory
+
+Load A        ; Load A again (overhead)
+Add C         ; A destroyed
+Store D       ; Save D to memory
+
+Load D        ; 
+Add F         ; D is destroyed
+Store E     
+```
+
+- **Total code size:**
+
+```
+Load A    → 5 + 48 = 53 bits
+Add B     → 5 + 48 = 53 bits  
+Store F   → 5 + 48 = 53 bits
+
+Load A    → 5 + 48 = 53 bits
+Add C     → 5 + 48 = 53 bits
+Store D   → 5 + 48 = 53 bits
+
+Load D    → 5 + 48 = 53 bits
+Add F     → 5 + 48 = 53 bits
+Store E   → 5 + 48 = 53 bits
+```
+
+- **Total code size**
+$$
+\text{Total} = (9 \times 53) = 477 \text{ bits} = 59.625 \text{ bytes}
+$$
+
+- **Total Instructions**: 9
+- **Overhead Instructions:** 1
+    - Load A
+- **Bytes of instructions and data moved to/from memory:**
+    - **Loads**
+    $$
+    A + B + A + C + F + D = 6 \times 32 = 192 \text{ bits}
+    $$
+    - **Stores**
+    $$
+    F + D + E = 3 \times 32 = 96 \text{ bits}
+    $$
+    - **Total data moved:**
+    $$
+    288 \text{ bits} = 36 \text{ bytes}
+    $$
+    - **Total instruction fetches**
+    $$
+    59.625 \text{ bytes}
+    $$
+    - **Total memory traffic**
+    $$
+    \text{Total memory traffic} = 36 + 59.625 = 95.625 \text{ bytes}
+    $$
+
+- **Overhead data bytes:** 
+    $$
+    1 \times 32 = 32 \text{ bits} = 4 \text{ bytes}
+    $$
+
+## Register (register-memory) Architecture
+
+```assembly
+Load R1, A      ; R1 = A
+Add R3, R1, B   ; R3 = R1 + B
+Store R3, F     ; Save F
+
+Add R3, R1, C   ; R3 = R1 + C
+Store R3, D     ; Save D
+
+Load R1, D      
+Add R3, R1, F   ; R3 = R1 + F
+Store R3, E     ; Save E
+```
+
+- **Total code size:**
+
+```assembly
+Load R1, A     → 5 + 3 + 48 = 56 bits
+Add R3, R1, B  → 5 + 3 + 3 + 48 = 59 bits  
+Store R3, F    → 5 + 3 + 48 = 56 bits
+Add R3, R1, C  → 5 + 3 + 3 + 48 = 59 bits
+Store R3, D    → 5 + 3 + 48 = 56 bits
+Load R1, D     → 5 + 3 + 48 = 56 bits
+Add R3, R1, F  → 5 + 3 + 3 + 48 = 59 bits
+Store R3, E    → 5 + 3 + 48 = 56 bits
+```
+
+$$
+457 \text{ bits} = 57.125 \text{ bytes}
+$$
+
+- **Total Instructions**: 7
+- **Overhead Instructions:** 0
+- **Bytes of instructions and data moved to/from memory:**
+    - **Loads**
+    $$
+    A + D = 2 \times 32 = 64 \text{ bits}
+    $$
+    - **Stores**
+    $$
+    F + D + E = 3 \times 32 = 96 \text{ bits}
+    $$
+    - **Total data moved:**
+    $$
+    160 \text{ bits} = 20 \text{ bytes}
+    $$
+    - **Total instruction fetches**
+    $$
+    57.125 \text{ bytes}
+    $$
+    - **Total memory traffic**
+    $$
+    \text{Total memory traffic} = 20 + 57.125 = 77.125 \text{ bytes}
+    $$
+
+- **Overhead data bytes:** 0 bytes
+
+## Register (load-store) Architecture
+
+```assembly
+Load R1, A      ; R1 = A
+Load R2, B      ; R2 = B
+Add R3, R1, R2  ; R3 = R1 + R2
+Store R3, F
+
+Load R2, C      ; R2 = C
+Add R3, R1, R2  ; R3 = R1 + R2
+Store R3, D     ; Save D
+
+Load R1, D      
+Load R2, F
+Add R3, R1, R2  ; R3 = R1 + R2
+Store R3, E     ; Save E
+```
+
+- **Total code size:**
+
+```assembly
+Load R1, A      → 5 + 3 + 48 = 56 bits
+Load R2, B      → 5 + 3 + 48 = 56 bits
+Add R3, R1, R2  → 5 + 3 + 3 + 3 = 14 bits
+Store R3, F     → 5 + 3 + 48 = 56 bits
+
+Load R2, C      → 5 + 3 + 48 = 56 bits
+Add R3, R1, R2  → 5 + 3 + 3 + 3 = 14 bits
+Store R3, D     → 5 + 3 + 48 = 56 bits
+
+Load R1, D      → 5 + 3 + 48 = 56 bits
+Load R2, F      → 5 + 3 + 48 = 56 bits
+Add R3, R1, R2  → 5 + 3 + 3 + 3 = 14 bits
+Store R3, E     → 5 + 3 + 48 = 56 bits
+```
+
+$$
+490 \text{ bits} = 61.25 \text{ bytes}
+$$
+
+- **Total Instructions**: 11
+- **Overhead Instructions:** 0
+- **Bytes of instructions and data moved to/from memory:**
+    - **Loads**
+    $$
+    A + B + C + D + F = 5 \times 32 = 160 \text{ bits}
+    $$
+    - **Stores**
+    $$
+    F + D + E = 3 \times 32 = 96 \text{ bits}
+    $$
+    - **Total data moved:**
+    $$
+    256 \text{ bits} = 32 \text{ bytes}
+    $$
+    - **Total instruction fetches**
+    $$
+    61.25 \text{ bytes}
+    $$
+    - **Total memory traffic**
+    $$
+    \text{Total memory traffic} = 32 + 61.25 = 93.25 \text{ bytes}
+    $$
+
+- **Overhead data bytes:** 0 bytes
+
+

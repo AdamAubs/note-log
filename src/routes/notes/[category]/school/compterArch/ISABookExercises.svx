@@ -1,0 +1,121 @@
+---
+title: Instruction Set Architecture Exercises 
+description: Practice problems to help prepare for midterm
+author: Adam Aubry
+date: '2025-09-023'
+---
+
+<script>
+	import { base } from '$app/paths';
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+</script>
+
+
+<SimpleFlashCard  question="What does the opcode do for machine level instructions?" answer="Specifies what operation to perform"/>
+<SimpleFlashCard  question="What does the addressing modes do for machine level instructions?" answer="Specifies how to access the data"/>
+
+# Addressing Modes Flash Cards
+
+<SimpleFlashCard question="Give an example of an instruction using register addressing mode to access data in register R3" answer="Add R4, R3" />
+
+<SimpleFlashCard question="When would you use register addressing mode?" answer="When the data you need is already stored in a CPU register (fastest access)" />
+
+<SimpleFlashCard question="Give an example of an instruction using immediate addressing mode to add the constant 3 to register R4" answer="Add R4, #3" />
+
+<SimpleFlashCard question="When would you use immediate addressing mode?" answer="When working with constants or literal values embedded directly in the instruction" />
+
+<SimpleFlashCard question="Give an example of an instruction using displacement addressing mode to access data that is 100 bytes away from the address in R1, then add it to R4" answer="Add R4, 100(R1)" />
+
+<SimpleFlashCard question="When would you use displacement addressing mode?" answer="For accessing array elements, structure fields, or local variables in stack frames" />
+
+<SimpleFlashCard question="Give an example of an instruction using register indirect addressing mode to access data at the memory address stored in R1" answer="Add R4, (R1)" />
+
+<SimpleFlashCard question="When would you use register indirect addressing mode?" answer="When working with pointers or computed addresses stored in registers" />
+
+<SimpleFlashCard question="Give an example of an instruction using indexed addressing mode with R1 as base and R2 as index" answer="Add R4, (R1+R2)" />
+
+<SimpleFlashCard question="When would you use indexed addressing mode?" answer="For array traversal and accessing elements at calculated offsets, especially in loops" />
+
+<SimpleFlashCard question="Give an example of an instruction using direct (absolute) addressing mode to access data at memory address 1001" answer="Add R4, (1001)" />
+
+<SimpleFlashCard question="When would you use direct (absolute) addressing mode?" answer="For accessing global variables or data at fixed, known memory addresses" />
+
+<SimpleFlashCard question="Give an example of an instruction using memory indirect addressing mode" answer="Add R4, @(R3)" />
+
+<SimpleFlashCard question="When would you use memory indirect addressing mode?" answer="For pointer-to-pointer operations or complex data structures with multiple levels of indirection" />
+
+<SimpleFlashCard question="Give an example of an instruction using autoincrement addressing mode" answer="Add R4, (R2)+" />
+
+<SimpleFlashCard question="When would you use autoincrement addressing mode?" answer="For stepping through arrays or data structures in loops where you need to automatically advance to the next element" />
+
+<SimpleFlashCard question="Give an example of an instruction using autodecrement addressing mode" answer="Add R4, -(R2)" />
+
+<SimpleFlashCard question="When would you use autodecrement addressing mode?" answer="For stack operations (like push/pop) or traversing arrays in reverse order" />
+
+<SimpleFlashCard question="Give an example of an instruction using scaled addressing mode with base R1, index R2, and scale factor 4" answer="Add R4, 100(R1,R2*4)" />
+
+<SimpleFlashCard question="When would you use scaled addressing mode?" answer="For accessing arrays of multi-byte elements (like integers, floats) where each element is larger than 1 byte" />
+
+<SimpleFlashCard question="What are the two dominating address modes? " answer="displacement and immediate addressing" />
+
+# Control Flow Addressing Modes Flashcards
+
+<SimpleFlashCard question="What is PC-relative addressing?" answer="A method where the destination address is specified by adding a displacement to the current program counter (PC)" />
+
+<SimpleFlashCard question="Why is PC-relative addressing advantageous?" answer="The target is often near the current instruction (requires fewer bits) and it enables position independence" />
+
+<SimpleFlashCard question="What is position independence?" answer="The ability for code to run correctly regardless of where it's loaded in memory" />
+
+<SimpleFlashCard question="When can't PC-relative addressing be used?" answer="When the target address is not known at compile time (returns, indirect jumps, switch statements)" />
+
+<SimpleFlashCard question="What is register indirect jumping?" answer="A method where the target address is stored in a register, and the jump instruction specifies which register contains the destination" />
+
+<SimpleFlashCard question="Name two features that require register indirect jumps." answer="Switch statements and virtual functions/methods in object-oriented languages" />
+
+<SimpleFlashCard question="For an 'if (x) then y' statement, what addressing mode is used?" answer="PC-relative addressing, because the compiler knows the target location at compile time" />
+
+<SimpleFlashCard question="Why do function returns require dynamic addressing?" answer="Because a function can be called from many locations, so the return address is only known at runtime" />
+
+<SimpleFlashCard question="What are the two main categories of control flow instructions?" answer="Static targets (known at compile time) and dynamic targets (known only at runtime)" />
+
+# Immediate/Literal Addressing Mode Flashcards
+
+<SimpleFlashCard question="What is immediate/literal addressing mode?" answer="A mode where the actual value (constant) is embedded directly in the instruction itself, rather than stored in memory or registers" />
+<SimpleFlashCard question="Give an example of immediate addressing in an ADD instruction." answer="ADD R1, R2, #5 - adds the immediate value 5 to register R2 and stores result in R1" />
+<SimpleFlashCard question="What are the three main uses of immediate addressing?" answer="Arithmetic operations, comparisons (for branches), and moves where a constant is needed in a register" />
+<SimpleFlashCard question="What are the two types of constants that use immediate addressing?" answer="Small constants written in code and large address constants" />
+<SimpleFlashCard question="Why is it important to know which operations need immediate support?" answer="Because supporting immediates for all operations versus only a subset affects the complexity and size of the instruction set" />
+<SimpleFlashCard question="What is the trade-off with immediate value size?" answer="Larger immediate values require more bits in the instruction, increasing instruction length and complexity" />
+<SimpleFlashCard question="According to the measurements, what size immediate values are used most frequently?" answer="Small immediate values are most heavily used" />
+<SimpleFlashCard question="When are large immediate values typically used?" answer="Most likely in addressing calculations where large address constants are needed" />
+<SimpleFlashCard question="What's the difference between 'MOVE R1, #100' and 'MOVE R1, (100)'?" answer="The first uses immediate addressing (put value 100 in R1), the second uses memory addressing (put contents of memory location 100 in R1)" />
+
+# Type and Size of Operands
+
+<SimpleFlashCard question="How many bits are in a character?" answer="8 bits or 1 byte" />
+<SimpleFlashCard question="How many bits are in a half word?" answer="16 bits or 2 bytes" />
+<SimpleFlashCard question="How many bits are in a word?" answer="32 bits or 4 bytes" />
+<SimpleFlashCard question="How many bits are in a word?" answer="32 bits or 4 bytes" />
+<SimpleFlashCard question="How many words is used for single-precision floating point?" answer="1 word" />
+<SimpleFlashCard question="How many words is used for double-precision floating point?" answer="2 words" />
+
+# Operand Types and Sizes Flash Cards
+
+<SimpleFlashCard question="How many words is used for double-precision floating point?" answer="2 words" />
+<SimpleFlashCard question="How is the type of an operand usually designated in an instruction?" answer="Encoding in the opcode designates the type of operand" />
+<SimpleFlashCard question="How many bits are typically used for a character operand?" answer="8 bits" />
+<SimpleFlashCard question="How many bits are typically used for a half word operand?" answer="16 bits" />
+<SimpleFlashCard question="How many bits are typically used for a word operand?" answer="32 bits" />
+<SimpleFlashCard question="How many bits are typically used for a double word operand?" answer="64 bits" />
+<SimpleFlashCard question="What number representation do integers almost universally use?" answer="Two's complement binary numbers" />
+<SimpleFlashCard question="What character encoding is usually used, and what newer standard is gaining popularity?" answer="ASCII is usual, but 16-bit Unicode is gaining popularity" />
+<SimpleFlashCard question="What floating-point standard do almost all computers follow since the early 1980s?" answer="IEEE standard 754" />
+<SimpleFlashCard question="What is packed decimal (binary-coded decimal)?" answer="A decimal format where 4 bits encode values 0-9, and 2 decimal digits are packed into each byte" />
+<SimpleFlashCard question="Why might decimal operands be used instead of binary for some calculations?" answer="To get results that exactly match decimal numbers, since some decimal fractions don't have exact binary representations" />
+<SimpleFlashCard question="According to Figure A.11, what size operands are most frequently accessed in memory?" answer="Words (32 bits) at about 60-70%" />
+<SimpleFlashCard question="What happens to 64-bit operands on a 32-bit address architecture?" answer="They would be replaced by 32-bit operands, requiring multiple operations to handle larger data" />
+<SimpleFlashCard question="What percentage of register references involve byte or half-word access according to VAX measurements?" answer="No more than 12% of register references (roughly 6% of all operand accesses)" />
+<SimpleFlashCard question="What architectural decision question does operand size frequency help answer?" answer="Whether to have a 64-bit access path or if taking two cycles for double-word access would be satisfactory" />
+
+![A.7]({base}/compArchBookExercises/a.7.png)
+

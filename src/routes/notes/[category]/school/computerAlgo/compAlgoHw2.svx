@@ -1,0 +1,233 @@
+---
+title: Homework 2
+description: Computer Algorithm Homework 2
+author: Adam Aubry
+date: '2025-09-023'
+---
+
+<script>
+	import { base } from '$app/paths';
+</script>
+
+
+# Problem 1:
+
+## Question a:
+
+![problem 1 a]({base}/algoHwQuestions/hw2Problem1a.png)
+
+## Algorithm
+
+$$
+\begin{align*}
+&\text{Sort the sizes so that } a_1 \leq a_2 \leq ... \leq a_n \\
+&A \leftarrow \empty \text{ // the set of sizes selected} \\
+&b \leftarrow 0 \text{ // the current bin size} \\
+&\text{For j = 1 To n} \\
+&\space\space\space\space \text{   If size j + the current bin size b } \leq \text{ bin size B} \\
+&\space\space\space\space\space\space\space\space\space\space \text{ add the current item to the bin} \\
+&\space\space\space\space\space\space\space\space\space\space \text{ b += size j} \\
+&\text{return A}
+\end{align*}
+$$
+
+## Question b:
+
+![problem 1 b]({base}/algoHwQuestions/hw2Problem1b.png)
+
+**Counter example:**
+
+Sizes are a1 = 10, a2 = 4, a3 = 5, and the bin size is B = 10
+
+If we first sort the the sizes to get the sizes in ascending
+order we will get sizes = [4, 5, 10]. When we implement the greedy
+algo we will get the max cardinality of sizes that is less than 
+the bin size which is a2 and a3, however this is not the maximum quantity.
+
+The issue is that we took the smallest elements first and did not care about
+the elements sizes. We should have chosen the largest size 10, but we already 
+reached the bin size when we got to it. To solve this issue we should have 
+sorted the sizes in descending order first and then greedily choose the largest
+sized elements that would fit in the bin.
+
+# Problem 2:
+
+![problem 2]({base}/algoHwQuestions/hw2Problem2.png)
+
+## Algorithm
+
+$$
+\begin{align*}
+&\text{Sort the position of each person such that } x_1 \leq x_2 \leq ... \leq x_n \\
+&U \leftarrow \empty \text{ // set of umbrella positions} \\
+&i \leftarrow 0 \text{ //index of current uncovered person} \\
+&L \leftarrow \text{ length of the umbrella} \\
+&\text{while } i \leq n \\
+&\space\space\space\space \text{    current person = } x_i \\
+&\space\space\space\space \text{    umbrella position = current position} + \frac{L}{2} \\
+&\space\space\space\space \text{    Add the umbrella position to the set U} \\
+&\space\space\space\space \text{    umbrella start = umbrella position} - \frac{L}{2} \\
+&\space\space\space\space \text{    umbrella end = umbrella position} + \frac{L}{2} \\
+&\space\space\space\space \text{    while } i \leq n \text{ and umbrella start} \leq x_i \leq \text{umbrella end} \\
+&\space\space\space\space\space\space\space\space\space\space \text{i += 1}  \\
+&\text{return U}
+\end{align*}
+$$
+
+## Proof
+
+Let the leftmost uncovered person be at position x_1. The algo 
+will then place the first umbrella at the position x_1 + L/2, covering
+the interval [x_1, x_1 + L].Any optimal solution must have some umbrella covering the 
+person at x_1 as well as cover the same interval [x_1, x_1 + L]
+
+Among all valid positions, placing the umbrella at x_i + L/2 is optimal because it still
+covers the person at x_1 and it covers any additional uncovered intervals [x_i, x_i + L] that extend 
+as far right as possible.
+
+The algorithm will run in O(n log(n)) since we are first sorting and then
+looping through each persons position once.
+
+# Problem 3:
+
+![problem 3]({base}/algoHwQuestions/hw2Problem3_1.png)
+![problem 3]({base}/algoHwQuestions/hw2Problem3_2.png)
+
+## a.) Algorithm 
+
+$$
+\begin{align*}
+&\text{Sort the items in descending order using the value-to-weight ratio } \frac{v_1}{w_1} \leq \frac{v_2}{w_2} \leq ... \leq \frac{v_n}{w_n} \\
+&V \leftarrow 0  \\
+&C \leftarrow W  \\
+&\text{For j = 1 To n} \\
+&\space\space\space\space \text{    If the C == 0} \\
+&\space\space\space\space\space\space\space\space\space\space \text{break out of the loop (knapsack is full)} \\
+&\space\space\space\space \text{    If the entire item fits into the bag } w_i \leq C \\
+&\space\space\space\space\space\space\space\space\space\space \text{amount added} = 1 \text{ entire item} \\
+&\space\space\space\space \text{    Else} \\
+&\space\space\space\space\space\space\space\space\space\space \text{amount added} = \frac{C \text{ the amount of weight left to reach the total weight}}{w_i \text{ weight of item}} \\
+&\space\space\space\space C \space -= \text{amount added} \times w_j  \\
+&\space\space\space\space V \space += \text{amount added} \times v_j  \\
+&\text{return V}
+\end{align*}
+$$
+
+## b.) Proof
+
+Prove that the greedy solution G is optimal by showing that we can 
+transform any optimal solution O into the greedy solution without losing 
+value.
+
+Let i be the first item where G and O take different amounts. 
+Since G is greedy, it takes as much as possible of each item in order.
+So G must take more of item i than O does initially.
+
+Since, both solutions use exactly the same total weight, O must
+be taking more of some later smaller items. We can create a new solution 
+from O which we can call O' that will exchange its lower values with
+higher values from G (the greedy solution). This will always give O' >= to O 
+and since we converted O' into G this proves that G is optimal.
+
+## c.) Runtime of Algorithm
+
+- Sorting takes 
+$$ 
+O(n log(n)) 
+$$ 
+
+- Looping through each of the items ratio 
+$$ 
+O(n) 
+$$
+
+**Complexity:** 
+$$
+O(n + log(n)) = O(n log(n))
+$$
+
+# Problem 4
+
+![problem 4]({base}/algoHwQuestions/hw2Problem4.png)
+
+## a.) Algorithm
+
+$$
+\begin{align*}
+&\text{Sort the jobs by profit in descending order such that } P_1 \geq P_2  \geq ... \geq P_n \\
+&M \leftarrow \text{ find the max deadline } d_j  \\
+&T \leftarrow \text{ create boolean array the size of the max deadline initialized with all false values} \\
+&S \leftarrow \text{ initialize empty schedule} \\
+&\text{For each job } d_j \text{ in sorted order} \\
+&\space\space\space\space \text{  For time slots } t \text{ from } min(d_j, M) \text{ down to } 1 \\
+&\space\space\space\space\space\space\space\space\space\space \text{ if time slot } T[t] == false \\
+&\space\space\space\space\space\space\space\space\space\space\space\space\space\space\space\space  \text{ T[t] = true} \\
+&\space\space\space\space\space\space\space\space\space\space\space\space\space\space\space\space  \text{ Add the job to the schedule S} \\
+&\text{return the schedule } S
+\end{align*}
+$$
+
+## b.) Proof
+
+I will prove that the greedy solution G is optimal by showing that the
+optimal solution O can be transformed into the greedy solution.
+
+**Case 1:** G's schedule is the same as O's
+
+**Case 2:** G's schedule is different from O's meaning there exits some job in
+O that is not in G. Also there is some job in G that is not in O. 
+
+Let j be the job with highest profit among all jobs in G but not in O
+
+Since our greedy algorithm selected j, there was an available time slot for j when we considered it.
+However, since j is not in O, that time slot in O must either be:
+
+- Empty
+- Occupied by some other job k
+
+**Empty case**
+
+If the time slot is empty than we can add job j to this empty slot, 
+creating schedule O' with profit(O') = profit(O) + p_j > profit(O). 
+This contradicts optimality of O.
+
+**Occupied by some other job k case**
+
+The time slot is occupied by job k in O.
+Since our greedy algorithm considered jobs in decreasing profit order,
+and j was selected while k was not (in our algorithm's execution), we know that either:
+
+- p_j > p_k
+- p_j = p_k and j was considered before k
+
+We can create schedule O' by replacing job k with job j. 
+Since p_j ≥ p_k, we have profit(O') ≥ profit(O).
+
+We can repeat this exchange process until O becomes identical to G. 
+Since each exchange maintains or improves the profit, the final schedule G has profit ≥ profit(O).
+
+Therefore, our greedy algorithm produces an optimal solution.
+
+## c.) Runtime of Algorithm
+
+- Sorting takes 
+$$ 
+O(n log(n)) 
+$$ 
+
+- Looping through each of job takes
+$$ 
+O(n)
+$$
+
+- Inner loop from the minimum of the current 
+jobs deadline or furthest out deadline could be at most
+$$ 
+O(n)
+$$
+
+
+**Complexity:** 
+$$
+O(n \space log(n) + (n \times n)) = O(n^{2})
+$$

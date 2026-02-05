@@ -1,0 +1,145 @@
+---
+title: Homework 4
+description: Computer Architecture Homework 4
+author: Adam Aubry
+date: '2025-09-02'
+---
+
+<script>
+	import { base } from '$app/paths';
+</script>
+
+# Problem 1
+
+<img src="{base}/compArchHw/hw4Problem1.png" alt="problem 1" width="400" />
+
+## a.) 
+What is the clock cycle time of the 5-stage pipelined machine?
+
+- The slowest stage is `MEM=5ns + register delay 0.2ns` meaning 
+it will take `5.2ns` for each stage to complete. The clock cycle time
+is therefore `5.2ns`.
+
+**Answer: 5.2 ns**
+
+## b.) 
+If there is a stall every three instructions, what is the CPI of the new machine?
+
+- 1 instruction is executed per cycle
+- stalls add extra cycle where no instruction completes
+- 3 instructions + 1 stall = 4 total cycles
+- 3 instructions completed
+- CPI = cycles/instructions = 4/3 = 1.33
+
+**Answer:** CPI = 1.33
+
+## c.) 
+What is the speedup of the pipelined machine (with the assumption of pipeline stalls in Q1.b) over the single-cycle machine?
+
+$$
+\text{speedup} = \frac{\text{execution time of old machine}}{\text{Execution time of new machine}} \\ 
+\\
+$$
+**Old Machine**
+$$
+\text{CPI} = 1 \\
+\text{Clock Cycle Time} = 17 \text{ ns} \\
+\text{Execution Time} = \text{instructions} \times \text{CPI} \times \text{Clock Cycle Time} = 1 \times 1 \times 17 = 17 \\
+$$
+
+**New Machine**
+$$
+\text{CPI} = \frac{4}{3} \\
+\text{Clock Cycle Time} = 5.2 \text{ ns} \\
+\text{Execution Time} = \text{instructions} \times \text{CPI} \times \text{Clock Cycle Time} = 1 \times \frac{4}{3} \times 5.2 = 6.93 \\
+$$
+
+**Speedup**
+$$
+\frac{17}{6.93} = \textbf{2.45x}
+$$
+
+**Answer: 2.45x**
+
+## d.) 
+Now we want to improve the performance by splitting one of the pipeline stages in half. Which stage should be split and what is the clock cycle time of this new 6-stage pipelined machine?
+
+- The longest stage `(MEM=5 ns)` should be split in half in order to improve performance
+
+**Clock cycle time of new 6-staged machine:**
+
+- The slowest stage is `IF=4ns + register delay 0.2ns` meaning 
+it will take `4.2ns` for each stage to complete. The clock cycle time
+is therefore `4.2ns`
+
+**Answer: 4.2ns**
+
+## e.) 
+If the pipelined machine had an infinite number of stages and there is no pipeline stall, what would its speedup be over the single-cycle machine?
+
+- With an infinite number of stages we would approach a clock cycle time of approximately `0`.
+- The register delay of `0.2 ns` would be the limit for clock cycle time.
+- Therefore, the speedup over the single cycle machine would be
+
+**Speedup**
+$$
+\frac{17}{0.2} = \textbf{85x}
+$$ 
+
+**Answer: 85x**
+
+<img src="{base}/compArchHw/hw4Problem2.png" alt="problem 2" width="400" height="200" />
+
+## a.) 
+Show the timing of this instruction sequence for the 5-stage RISC pipeline without any
+forwarding hardware but assuming that a register read and a write in the same clock cycle
+“forwards” through the register file, as between the “add” and “or” shown in Figure C.5. Use a
+pipeline timing chart like that in Figure C.8. If all memory references take 1 cycle (in the MEM
+stage), how many cycles does this loop take to execute?
+
+**Answer:**
+
+| Instruction       | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9 | C10 | C11 | C12 | C13 | C14 | C15 | C16 | C17 | C18 | C19 | C20 | C21 | C22 |
+|-------------------|----|----|----|----|----|----|----|----|----|----- |-----|-----|-----|-----|-----|-----|-----|----|-----|-----|-----|-----|
+| ld x3,0(x1)       | IF | ID | EX | ME | WB |    |    |    |    |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| ld x4,0(x2)       |    | IF | ID | EX | ME | WB |    |    |    |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| add x5,x3,x4      |    |    | IF | ID | st | st | EX | ME | WB |     |     |     |     |     |     |     |     |     |     |     |     |     |
+| sd x5,0(x1)       |    |    |    | IF | st | st | ID | st | st | EX  | ME  | WB  |     |     |     |     |     |     |     |     |     |     |
+| addi x2,x2,8      |    |    |    |    |    | IF | st | st | st | st  | st  | ID  | EX  | ME  | WB  |     |     |     |     |     |     |     |
+| sub x7,x6,x1      |    |    |    |    |    |    | IF | st | st | st  | st  | st  | ID  | st  | EX  | ME  | WB  |     |     |     |     |     |
+| bnez x7,Loop      |    |    |    |    |    |    |    | IF | st | st  | st  | st  | st  | ID  | st  | st  | st  | EX  | ME  | WB  |     |     |
+| xor x8,x9,x10     |    |    |    |    |    |    |    |    | IF | st  | st  | st  | st  | st  | st  | st  | st  | ID  | FL  | EX  | ME  | WB  |
+| ld x3,0(x1) (i2)  |    |    |    |    |    |    |    |    |    |     |     |     |     |     |     |     |     | IF  | ID  |     |     |     |
+
+- The loop runs for `28` iterations
+- Iterations 1-27 has `17` cycles: `17 * 27 = 459` cycles
+- Iteration 28: `21` cycles
+
+Total number of cycles: **459 + 21 = 480** 
+
+## b.) 
+Show the timing of this instruction sequence for the 5-stage RISC pipeline with full
+forwarding hardware. Use a pipeline timing chart like that shown in Figure C.8. If all memory
+references take 1 cycle (in the MEM stage), how many cycles does this loop take to execute?
+
+**Answer:**
+
+| Instruction       | C1 | C2 | C3 | C4 | C5 | C6 | C7 | C8 | C9 | C10 | C11 | C12 | C13 | C14 | C15 |
+|-------------------|----|----|----|----|----|----|----|----|----|-----|-----|-----|-----|-----|-----|
+| ld x3,0(x1)       | IF | ID | EX | ME | WB |    |    |    |    |     |     |     |     |     |     |
+| ld x4,0(x2)       |    | IF | ID | EX | ME | WB |    |    |    |     |     |     |     |     |     |
+| add x5,x3,x4      |    |    | IF | ID | st | EX | ME | WB |    |     |     |     |     |     |     |
+| sd x5,0(x1)       |    |    |    | IF | st | ID | EX | ME | WB |     |     |     |     |     |     |
+| addi x1,x1,8      |    |    |    |    | IF | st | ID | EX | ME | WB  |     |     |     |     |     |
+| addi x2,x2,8      |    |    |    |    |    | IF | st | ID | EX | ME  | WB  |     |     |     |     |
+| sub x7,x6,x1      |    |    |    |    |    |    | IF | st | ID | EX  | ME  | WB  |     |     |     |
+| bnez x7,Loop      |    |    |    |    |    |    |    | IF | st | ID  | EX  | ME  | WB  |     |     |
+| xor x8,x9,x10     |    |    |    |    |    |    |    |    | IF | st  | ID  | FL  | EX  | ME  | WB  |
+| ld x3,0(x1) (i2)  |    |    |    |    |    |    |    |    |    |     | IF  | ID  | EX  |     |     |
+
+
+- The loop runs for `28` iterations
+- Iterations 1-27 has `10` cycles: `10 * 27 = 270` cycles
+- Iteration 28: `14` cycles
+
+Total: **270 + 14 = 284 cycles**

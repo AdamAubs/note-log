@@ -257,7 +257,12 @@ export const notesFileTree = [
 								name: 'Memory Hierarchies and Consistency',
 								path: '/notes/school/distributedSystems/memoryHierarchiesAndConsistency',
 								type: 'file'
-							}
+							},
+							{
+								name: 'Ch1 - flash-cards',
+								path: '/notes/school/distributedSystems/ch1FlashCards.svx',
+								type: 'file'
+							},
 						]
 					}
 				]

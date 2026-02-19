@@ -1,0 +1,189 @@
+---
+title:  Flash-cards for ch1 Parallel and Distributed Processing in the Real World
+description: 
+author: Adam Aubry
+date: '2025-09-023'
+---
+
+<script>
+	import { base } from '$app/paths';
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+</script>
+
+## Core Concepts
+
+<SimpleFlashCard 
+    question="What is the difference between a program and a process?" 
+    answer="A program is a passive binary file on disk containing machine instructions and static data. A process is an active execution context created by the OS that includes a private virtual address space, loaded code and data from the program file, a stack, a heap, CPU registers, and at least one thread of control. A program is bytes at rest; a process is that program being executed." />
+
+<SimpleFlashCard 
+    question="What are the five key steps the OS performs to create a process from a program?" 
+    answer="1. Create a private virtual address space for the process. 2. Load code, data, and libraries into that address space with appropriate permissions. 3. Allocate and initialize a stack for the main thread. 4. Set CPU registers including program counter to entry point and stack pointer. 5. Create at least one thread and add it to the scheduler's run queue." />
+
+<SimpleFlashCard 
+    question="What is a message in distributed systems?" 
+    answer="A message is a chunk of structured data that one component sends to another to trigger an action. It is essentially a record (with named fields and types) that has been serialized into bytes for transmission. Messages typically have a header (with metadata like message type, sender ID, timestamps) and a body (with application-specific fields)." />
+
+<SimpleFlashCard 
+    question="What is an API in the context of distributed systems?" 
+    answer="An API (Application Programming Interface) is a contract that specifies what operations a client can request, what inputs each operation expects, what outputs and errors the client will get back, and what guarantees and limits apply. It describes the interface, not the implementation, allowing providers to change internals without breaking users. In distributed systems, APIs define how services are accessed through serialized messages." />
+
+<SimpleFlashCard 
+    question="What are the key differences between shared memory parallel systems and distributed systems?" 
+    answer="Shared memory: single address space accessible to all threads, low latency (nanoseconds), high bandwidth, tight coupling, single OS, one failure model (whole machine). Distributed: disjoint address spaces, explicit messages, high latency (milliseconds), lower bandwidth, loose coupling, multiple OS instances, partial failures. Parallel focuses on speeding up one job; distributed focuses on serving many clients with high availability." />
+
+<SimpleFlashCard 
+    question="Define latency, bandwidth, and jitter in network communication." 
+    answer="Latency (L): delay between when a message starts leaving the sender and when the first bit reaches the receiver, includes propagation, switching, queuing, and OS overhead. Bandwidth (B): maximum data rate of the channel in bits per second once a stream is flowing. Jitter: variation in latency between messages of equal size, causing timing inconsistencies." />
+
+<SimpleFlashCard 
+    question="What is the bandwidth-delay product and why does it matter?" 
+    answer="The bandwidth-delay product is bandwidth × latency, representing the number of bits that can be in flight while the first bit travels from sender to receiver. It matters because on long, high-bandwidth links, you must keep many kilobytes or megabytes in flight to fully utilize the pipe. Stop-and-wait protocols massively underutilize high bandwidth-delay product networks." />
+
+<SimpleFlashCard 
+    question="What is the formula for communication time T for a single request-response pair?" 
+    answer="T = L + (8 × S_req / B_up) + (8 × S_resp / B_down), where L is round-trip latency, S is size in bytes, and B is bandwidth in bits/second. The factor 8 converts bytes to bits. The first term is fixed delay; the remaining terms are serialization time for pushing bits through the pipe." />
+
+<SimpleFlashCard 
+    question="When is a system latency-bound vs bandwidth-bound?" 
+    answer="Latency-bound: when L dominates and messages are small/frequent, so 8S/B << L. The fixed cost of each round trip dominates. Bandwidth-bound: when 8S/B dominates L and messages are large or aggregate volume is high. The time spent pushing bits dominates. Use dimensionless ratio K = L×B/(8×S): K >> 1 means latency-bound, K << 1 means bandwidth-bound." />
+
+<SimpleFlashCard 
+    question="What is the difference between serialization time and path latency?" 
+    answer="Serialization time (8×S/B) is how long the sender spends clocking all bits into the link at the available bandwidth—from first bit entering to last bit entering. Path latency (L) is propagation delay, switching, queuing, and OS overhead—the time for the first bit to reach the receiver. Total message delivery time is L + 8×S/B because bits are pipelined through the same path." />
+
+<SimpleFlashCard 
+    question="Why can't distributed systems rely on a global clock?" 
+    answer="Hardware clocks on different nodes drift at slightly different speeds. Even synchronized initially, they diverge over time. Network delays are unpredictable, so timestamps can't reliably indicate event ordering between nodes. At realistic scales, perfect global clock synchronization is impossible. Systems must use logical time and track causal ordering through message chains instead of trusting raw wall-clock values." />
+
+## System Models and Timing
+
+<SimpleFlashCard 
+    question="Contrast synchronous and asynchronous distributed system models." 
+    answer="Synchronous: known bounds on process step time, message delay, and clock drift. Timeouts reliably indicate failure. Many coordination problems become solvable. Asynchronous: no useful bounds. Processes can pause arbitrarily, messages can be delayed arbitrarily, clocks drift unboundedly. Cannot distinguish slow from crashed by observation alone. Real networks behave closer to asynchronous." />
+
+<SimpleFlashCard 
+    question="Describe the four communication timing styles with analogies." 
+    answer="1. Synchronous (phone call): both sides engaged simultaneously, caller blocks until callee responds. 2. Asynchronous with rendezvous (fax): sender blocks until local system accepts message, delivery guaranteed but receiver processes later. 3. Asynchronous FIFO (express mail): messages arrive in send order despite different delays. 4. Asynchronous unordered (postal mail): messages can arrive out of order or be lost." />
+
+<SimpleFlashCard 
+    question="What is the difference between concurrency and parallelism?" 
+    answer="Concurrency: multiple logical activities overlap in time with execution steps that can be interleaved in many valid orders, requiring coordination because they share resources or communicate. About structure and possible interleavings. Parallelism: multiple operations actually execute at the same physical instant on different hardware execution units. About simultaneous execution. You can have concurrency without parallelism (one core, time-sliced threads) or parallelism without concurrency complexity (independent kernels on separate data)." />
+
+## Distribution Transparencies
+
+<SimpleFlashCard 
+    question="What is access transparency?" 
+    answer="Access transparency means local and remote resources are accessed in the same way. Example: a network file system that lets you open, read, and write remote files with the same operations as local files, without special 'remote_open' calls. Users don't need different APIs for different locations." />
+
+<SimpleFlashCard 
+    question="What is location transparency?" 
+    answer="Location transparency means resource names don't embed physical location. Example: a URL like https://example.com/profile doesn't reveal which data center or disk holds the data. The system can move data between machines without changing the name. Contrast with server17:/home/user which breaks location transparency." />
+
+<SimpleFlashCard 
+    question="What is the difference between migration transparency and relocation transparency?" 
+    answer="Migration transparency: resources can move while NOT in use without affecting users (e.g., VM stopped on one host, started on another, clients reconnect seamlessly). Relocation transparency: stronger—resources can move WHILE in use (e.g., live VM migration with brief pause, clients stay connected). Relocation is migration during active use." />
+
+<SimpleFlashCard 
+    question="What is replication transparency?" 
+    answer="Replication transparency hides that multiple copies of an object or service exist. Example: a replicated database appears as a single logical database to clients. The system internally forwards queries to replicas, handles voting/conflict resolution, and masks replica failures. Clients see one consistent endpoint." />
+
+<SimpleFlashCard 
+    question="What is failure transparency and why is complete failure transparency impossible?" 
+    answer="Failure transparency tries to hide component failures from users by redirecting to replicas or retrying. Example: if one storage node crashes but another replica has the data, requests continue (slower but successful). Complete failure transparency is impossible because eventually all replicas might fail, and hiding that would mean lying. Realistic goal: mask common single-component failures." />
+
+<SimpleFlashCard 
+    question="What is concurrency transparency?" 
+    answer="Concurrency transparency hides that multiple users/processes access shared resources simultaneously. Example: a file system where concurrent operations by many processes don't require application-level coordination. Internal locks and protocols ensure consistent semantics so each program behaves as if it were alone, within documented rules." />
+
+<SimpleFlashCard 
+    question="What are persistence transparency and security transparency?" 
+    answer="Persistence transparency: hides distinction between memory and disk, between transient and persistent data. Example: persistent object store with same identifiers after reboot, requires logging/checkpointing. Security transparency: integrates authentication, authorization, encryption automatically. Example: platform with SSO and consistent access control so applications don't manage security manually." />
+
+## Performance Goals
+
+<SimpleFlashCard 
+    question="Define reliability, availability, and scalability with examples from distributed backup systems." 
+    answer="Reliability: probability system functions correctly over time without corrupting data. Measured by MTTF (mean time to failure). Example: P2P backup where files can be reconstructed despite peer failures. Availability: fraction of time system responds within constraints. Measured as percentage (e.g., 99.999% = 5 minutes downtime/year). Scalability: performance maintains characteristics as load and resources grow, ideally linearly. Example: backup system where messaging grows O(n) not O(n²) with peers." />
+
+<SimpleFlashCard 
+    question="What is the difference between 99.99% and 99.999% availability?" 
+    answer="99.99% (four nines): approximately 1 hour of downtime per year (52.56 minutes). 99.999% (five nines): approximately 5.26 minutes of downtime per year. One additional nine cuts allowable downtime by a factor of 10. The difference between 99.999% and 99.998% doubles downtime from ~5 minutes to ~10 minutes per year." />
+
+<SimpleFlashCard 
+    question="How do you measure scalability experimentally?" 
+    answer="Choose a workload (e.g., operations per second), vary number of nodes and load, track throughput, average/tail latencies, and resource usage. Good scalability: multiplying nodes by 10 while holding per-node resources constant yields ~10× throughput with similar latencies. Poor scalability: latency explodes and throughput flattens, indicating bottlenecks or O(n²) communication patterns." />
+
+<SimpleFlashCard 
+    question="Why is an all-connected P2P clique with n peers non-scalable?" 
+    answer="n peers create n(n-1) communication edges, so messaging load grows O(n²). Adding 100 peers yields ~10,000 potential channels, saturating the network. Performance degrades quadratically, not linearly. A scalable design constrains communication so control messages grow sublinearly or linearly with n." />
+
+## Latency and Bandwidth Calculations
+
+<SimpleFlashCard 
+    question="Given S_req=1KB, S_resp=19KB, B=80Mb/s, L=40ms, is this latency-bound or bandwidth-bound?" 
+    answer="Total bytes S = 20KB = 160Kb. Serialization time = 160,000/80,000,000 ≈ 1.9ms. Total time T = L + serialization = 40ms + 1.9ms ≈ 42ms. Since L (40ms) >> serialization (1.9ms), this is latency-bound. Reducing response size slightly won't help much; reducing L by moving servers closer would have visible effect." />
+
+<SimpleFlashCard 
+    question="What is the maximum sustainable request rate formula?" 
+    answer="Each request-response moves D = 8×(S_req + S_resp) bits. At R requests/second, traffic is R×D bits/second. Maximum sustainable rate: R_max = B_available / D. If actual R > R_max, queues grow and latency increases unboundedly. Example: D=160Kb, B=80Mb/s gives R_max = 80,000,000/160,000 = 500 req/s." />
+
+<SimpleFlashCard 
+    question="When should you buy lower latency vs more bandwidth?" 
+    answer="Compare efficiency: Eff_L = R×L×(1 - 1/q_L)/Cost_L vs Eff_B = R×8×S/B×(1 - 1/q_B)/Cost_B. Latency savings grow with R but not S (helps frequent small messages). Bandwidth savings grow with both R and S (helps large data transfers). If K = L×B/(8×S) >> 1, buy latency. If K << 1, buy bandwidth." />
+
+<SimpleFlashCard 
+    question="For L=5ms, B=1Gb/s, S=18KB, R=10,000 req/s, compare latency reduction (5ms→2ms) vs bandwidth increase (1Gb/s→4Gb/s)." 
+    answer="Serialization ≈ 0.147ms, T ≈ 5.147ms. Latency reduction saves 3ms per request × 10,000 = 30s of waiting/second. Bandwidth increase saves ~0.11ms per request × 10,000 = 1.1s/second. For equal cost, latency upgrade is much better because messages are small and system is latency-bound (serialization << L)." />
+
+<SimpleFlashCard 
+    question="For L=5ms, B=1Gb/s, S=4MB, R=200 req/s, compare latency reduction (5ms→2ms) vs bandwidth increase (1Gb/s→4Gb/s)." 
+    answer="Serialization ≈ 33.6ms, T ≈ 38.6ms. Latency reduction saves 3ms × 200 = 0.6s/second. Bandwidth increase (serialization → 8.4ms, T → 13.4ms) saves 25.2ms × 200 = 5.04s/second. Bandwidth upgrade is clear winner because messages are large and system is bandwidth-bound (serialization >> L)." />
+
+## Advanced Concepts
+
+<SimpleFlashCard 
+    question="Why does L (latency) apply once per message, not once per internal block?" 
+    answer="L includes propagation, switching, queuing, OS overhead—paid when the message enters the path. Internal blocks are pipelined through the same pipe: while later blocks are being serialized, earlier blocks are already propagating. The whole message sees one path latency L plus one serialization time 8×S/B. Only separate messages each pay L, not blocks within one message." />
+
+<SimpleFlashCard 
+    question="Explain the pipe analogy for latency and bandwidth with examples." 
+    answer="Latency = length of the road (travel time for one car). Bandwidth = number of lanes (cars in flight simultaneously). Wide highway with many lanes and fast cars = high bandwidth, many packets in parallel. Narrow single-lane roads with slow cars = low bandwidth, low throughput. Long road with high speed limit = high latency but potentially high bandwidth once filled." />
+
+<SimpleFlashCard 
+    question="A car travels 100km at 100km/h. How does this relate to network latency?" 
+    answer="Travel time T = distance/speed = 100km/100km/h = 1 hour. Doubling speed to 200km/h gives T = 0.5 hour. Road length didn't change, only speed. Analogous to improving link technology so bits move faster along the same path (reduces latency). A 3000km fiber link at 200,000 km/s has ~15ms one-way propagation; you can't shrink this without moving endpoints." />
+
+<SimpleFlashCard 
+    question="What is the difference between MTTF and MTTR?" 
+    answer="MTTF (Mean Time To Failure): average time between failures that break correctness (e.g., data loss). Measures reliability. MTTR (Mean Time To Repair): average time to recover from a visible outage. Measures how quickly service is restored. A system can be reliable (high MTTF, rarely loses data) but poorly available if MTTR is long (takes hours to recover after crashes)." />
+
+<SimpleFlashCard 
+    question="What is the happened-before relation and why is it needed in distributed systems?" 
+    answer="The happened-before relation tracks causal ordering between events through message chains: if event A sends a message that leads to event B, then A happened-before B. Needed because there's no reliable global clock in distributed systems. Logical clocks (Lamport clocks, vector clocks) record this ordering without assuming a global 'now', allowing correct reasoning about event causality despite clock skew and network delays." />
+
+## Exercises
+
+<SimpleFlashCard 
+    question="Exercise: Why are disjoint address spaces safer than shared memory? Give three situations." 
+    answer="1. Memory corruption bugs in one process can't corrupt another process's data, preventing cascading failures. 2. Security: compromised process can't directly read sensitive data from other processes, requires explicit IPC. 3. Fault isolation: crashes confined to one address space, not bringing down other components. Explicit messages make all interactions auditable and controllable." />
+
+<SimpleFlashCard 
+    question="Exercise: How would you handle 1GB data transfer differently under high-latency/high-bandwidth vs low-latency/low-bandwidth?" 
+    answer="High latency, high bandwidth: pipeline/parallelize transfers, send large chunks to keep pipe full, minimize round trips (L dominates startup but wide pipe supports throughput). Low latency, low bandwidth: break into smaller chunks, don't spray large bursts (would saturate narrow pipe and increase queuing), perhaps compress data to reduce total bits, latency is low so per-message overhead is acceptable." />
+
+<SimpleFlashCard 
+    question="Exercise: Two clocks start synchronized. After 1 hour, one is +80ms ahead, the other is -120ms behind. Why are timestamp comparisons misleading?" 
+    answer="The clocks now differ by 200ms. Events at different machines can't be ordered reliably by raw timestamps—an event at the 'behind' machine might have a smaller timestamp than an event at the 'ahead' machine even if it occurred later in real time. Must use logical clocks or vector clocks that track causal message dependencies instead of trusting wall-clock values for ordering." />
+
+<SimpleFlashCard 
+    question="Exercise: Distributed cache across 3 data centers. Describe synchronous vs asynchronous design during 30s network partition." 
+    answer="Synchronous design: assumes bounded delays, would treat 30s partition as failure, stop serving requests or return errors (can't meet consistency guarantees without communication). Asynchronous design: no timing assumptions, could serve stale reads from disconnected replicas, queue writes, reconcile after partition heals using version vectors or CRDTs, prioritizes availability over immediate consistency." />
+
+<SimpleFlashCard 
+    question="Exercise: Why do timeout-based failure detectors misclassify slow nodes as failed in asynchronous systems?" 
+    answer="In asynchronous systems there are no bounds on processing or network delays. A slow node or temporarily congested network can exceed timeout threshold without actually being crashed. The detector can't distinguish 'delayed but alive' from 'failed' by observation alone. Techniques to reduce mistakes: adaptive timeouts based on recent latency, heartbeat mechanisms with multiple checks, gossip protocols for distributed consensus on suspected failures." />
+
+<SimpleFlashCard 
+    question="Exercise: Bug appears only when 4 processes run on separate nodes, disappears when collapsed into threads. Why?" 
+    answer="Disjoint memory spaces mean race conditions manifest differently (message interleavings vs shared memory races). Imperfect clocks and variable network delays create timing patterns impossible in single-process threading. Tools to help: distributed tracing to correlate events across nodes, logical clocks to track causality, replay mechanisms that record message orderings, and simulation frameworks that inject controlled delays and failures." />

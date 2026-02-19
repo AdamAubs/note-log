@@ -1,0 +1,75 @@
+---
+title: What is Dynamo DB? 
+description: 
+author: Adam Aubry
+date: '2026-02-13'
+---
+
+
+## What is DynamoDB?
+
+**DynamoDB is a NoSQL (non-relational) database.**
+
+**Relational DB (like MySQL):**
+```
+Users Table:
+id | email              | name
+1  | john@example.com   | John
+
+Devices Table:
+id | userId | deviceName
+1  | 1      | Fluffy's Dispenser
+↑ Foreign key relationship
+```
+- Fixed schema (columns must be defined upfront)
+- Uses JOIN queries to connect tables
+- Great for complex relationships
+
+**DynamoDB (NoSQL):**
+```
+DeviceOwnership Table:
+{
+  deviceId: "TEST123",
+  userId: "testuser@example.com",
+  deviceName: "Test Dispenser",
+  claimedAt: "2026-02-13..."
+  // Can add any attributes you want!
+}
+```
+- **Schemaless:** Each item can have different attributes
+- **Key-value store:** Look up by key (`deviceId`) super fast
+- **No JOINs:** Denormalize data (duplicate if needed)
+- **Scales automatically:** Millions of requests/second
+
+---
+
+## Why Do We Need the ARN?
+
+**ARN = Amazon Resource Name** - it's the unique ID for your table in AWS.
+
+Think of it like a full address:
+```
+arn:aws:dynamodb:us-****-*:************:table/DeviceOwnership
+         ↓         ↓           ↓                    ↓
+      service   region    account ID           table name
+```
+
+**Why we need it:**
+
+When your Next.js API routes try to read/write to DynamoDB, AWS asks:
+> "Does this application have permission to access this specific table?"
+
+We'll use the ARN to:
+1. **Create IAM permissions** - Tell AWS "this app can read/write to `arn:...:DeviceOwnership`"
+2. **Configure the AWS SDK** - Point our code to the exact table
+
+**Without the ARN:** Your API would get "Access Denied" errors.
+
+**Analogy:** 
+- ARN = Street address of the database
+- IAM permissions = Keys to unlock the door
+- Your Next.js app = Person trying to get in
+
+---
+
+**Next step:** I'll create the API routes that use this ARN to query your table. Ready to build?

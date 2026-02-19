@@ -4,6 +4,75 @@ export const notesFileTree = [
 		type: 'folder',
 		children: [
 			{
+				name: 'Linux',
+				type: 'folder',
+				children: [
+					{
+						name: 'What is Ubuntu?',
+						path: '/notes/personal/linux/what-is-Ubuntu',
+						type: 'file'
+					}
+				]
+			},
+			{
+				name: 'Coding',
+				type: 'folder',
+				children: [
+					{
+						name: 'AWS & DynamoDB',
+						type: 'folder',
+						children: [
+							{
+								name: 'What is DynamoDB?',
+								path: '/notes/personal/coding/What-is-DynamoDB',
+								type: 'file'
+							},
+							{
+								name: 'AWS Cognito Setup Guide',
+								path: '/notes/personal/coding/AWS-Cognito-Setup-Guide',
+								type: 'file'
+							},
+							{
+								name: 'Add DynamoDB Permissions to IAM User',
+								path: '/notes/personal/coding/Add-DynamoDB-Permissions-to-IAM-User',
+								type: 'file'
+							},
+							{
+								name: 'Configure Frontend with Amplify',
+								path: '/notes/personal/coding/Configure-Frontend-with-Amplify',
+								type: 'file'
+							},
+							{
+								name: 'DynamoDB Table Setup',
+								path: '/notes/personal/coding/DynamoDB-Table-Setup',
+								type: 'file'
+							},
+							{
+								name: 'Global Secondary Index Explained',
+								path: '/notes/personal/coding/Global-Secondary-Index-Explained',
+								type: 'file'
+							},
+							{
+								name: 'How to Build API Routes to Query DynamoDB Table',
+								path: '/notes/personal/coding/How-to-build-API-routes-to-query-DynamoDB-table',
+								type: 'file'
+							}
+						]
+					},
+					{
+						name: 'Architecture',
+						type: 'folder',
+						children: [
+							{
+								name: 'Client-side Logic vs API Routes',
+								path: '/notes/personal/coding/Client-side-logic-vs-API-routes',
+								type: 'file'
+							}
+						]
+					}
+				]
+			},
+			{
 				name: 'CompTIA A+ 220-1201',
 				type: 'folder',
 				children: [
@@ -160,6 +229,55 @@ export const notesFileTree = [
 							{
 								name: 'Homework 3',
 								path: '/notes/school/computerAlgo/compAlgoHw3',
+								type: 'file'
+							}
+						]
+					}
+				]
+			},
+			{
+				name: 'Distributed Computer Systems',
+				type: 'folder',
+				children: [
+					{
+						name: 'Textbook',
+						type: 'folder',
+						children: [
+							{
+								name: 'Programming Models',
+								path: '/notes/school/distributedSystems/programmingModels',
+								type: 'file'
+							},
+							{
+								name: 'Processes and Threads',
+								path: '/notes/school/distributedSystems/processesAndThreads',
+								type: 'file'
+							},
+							{
+								name: 'Memory Hierarchies and Consistency',
+								path: '/notes/school/distributedSystems/memoryHierarchiesAndConsistency',
+								type: 'file'
+							}
+						]
+					}
+				]
+			},
+			{
+				name: 'Concurrency',
+				type: 'folder',
+				children: [
+					{
+						name: 'locks',
+						type: 'folder',
+						children: [
+							{
+								name: 'Atomic lock',
+								path: '/notes/school/concurrency/atomic-lock-implementation',
+								type: 'file'
+							},
+							{
+								name: 'Peterson lock',
+								path: '/notes/school/concurrency/peterson-lock-implementation',
 								type: 'file'
 							}
 						]

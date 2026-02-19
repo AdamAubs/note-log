@@ -1,0 +1,12 @@
+---
+title: Chapter 1 Flash Cards 
+description: 
+author: Adam Aubry
+date: '2025-09-023'
+---
+
+<script>
+	import { base } from '$app/paths';
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+</script>
+

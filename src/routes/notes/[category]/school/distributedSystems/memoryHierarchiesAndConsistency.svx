@@ -1,0 +1,172 @@
+---
+title: Memory Hierarchies and Consistency Basics 
+description: 
+author: Adam Aubry
+date: '2025-09-023'
+---
+
+<script>
+	import { base } from '$app/paths';
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+</script>
+
+<!-- Since processors can execute instructions much faster than main memory can deliver data, the gap between
+processor speed and memory keeps growing. Shared variables now have to filter through several layers cache levels,
+**coherence protocols**, and memory ordering rules.
+
+**Key Terms in the Chapter**:
+
+**Caches:**
+    How its used:
+    Why its necessary to know:
+**Memory Hierarchies:**
+    How its used:
+    Why its necessary to know:
+**Cache coherence protocols:**
+    How its used:
+    Why its necessary to know:
+**Memory Consistency:**
+    How its used:
+    Why its necessary to know:
+**Ordering guarantees:**
+    How its used:
+    Why its necessary to know:
+**Java memory model:**
+    How its used:
+    Why its necessary to know:
+**Correctness:**
+    How its used:
+    Why its necessary to know:
+
+**Stick Consistency:**
+- What a memory location reads is based on what write happend in real time before it.
+GIVE EXAMPLE HERE!
+
+
+## Questions
+
+<SimpleFlashCard  question="When can a concurrent history be serializable but not linearizable" answer=""/>
+
+
+When can a concurrent history be serializable but not linearizable? *
+- When each operation on a shared object appears atomic, but transactions sometimes read uncommitted data.
+- * When a later transaction in real time is placed earlier in the equivalent serial order, even though a client could prove from timestamps that its commit finished first.
+- When all operations respect wall clock time, but some objects temporarily violate per location coherence.
+- When the schedule is conflict serializable but violates causal consistency.
+
+In the example where thread one writes data then sets ready and thread two spins on ready then reads data, which combinations of declarations and synchronization can the Java memory model treat as incorrectly synchronized? *
+- * Both data and ready are plain non volatile fields and no synchronized blocks are used. 
+- ready is volatile, data is plain, and no other synchronization is used.
+- * Both data and ready are volatile, but thread two reads data before checking ready. 
+- Both fields are plain, but both threads use the same synchronized block around their writes and reads.
+
+A system designer claims that strict consistency, sequential consistency, and linearizability are equivalent for a single shared register. Which statement best describes the flaw in this claim? *
+- Sequential consistency is strictly stronger than strict consistency, so they cannot be equivalent.
+- Linearizability is weaker than sequential consistency because it ignores real time, so it cannot be equivalent to strict consistency.
+- * Strict consistency requires reads to see the latest value in real time, while sequential consistency and linearizability only require compatibility with some interleaving and, for linearizability, with real time between invocation and response.
+- All three models become identical for a single register, so there is no flaw in the claim.
+
+Consider a processor with private write back, write allocate L1 caches and an inclusive last level cache. Two threads on different cores alternately increment the same shared counter in a tight loop. Which description best matches what happens at the cache line level? *
+- The line stays shared in all caches, and each increment is applied independently without extra coherence traffic.
+- * The line moves repeatedly into Modified state in one L1, then into Modified state in the other L1, generating a stream of invalidations between cores.
+- The line remains in Modified state in the last level cache, and each L1 sends write through updates on every increment.
+- The line is allocated only in one core's L1 and never leaves it, so the other core always reads a stale value from main memory.
+
+A chapter example used a replicated key value store where a write finishes at time three and a later read at time six still returns the old value. Which models can justify this behavior as correct for that single key, given only the key and these two operations? *
+- * Serializability.
+- Linearizability.
+- * Sequential consistency without real time constraints.
+- Strict consistency.
+
+In the MESI protocol, which scenario most clearly illustrates the practical benefit of the Exclusive state over having only Shared, Modified, and Invalid? *
+- Two cores read the same line, then one core writes, forcing an invalidation in the other core.
+- * A core reads a line that no other core holds, then repeatedly writes to it without sending any coherence messages.
+- A dirty line is evicted from L1 and written back to the last level cache.
+- A core writes to a line that is already Shared in two cores, then both cores downgrade their copies.
+
+A student proposes the following rule for the Java memory model. If a program has no data races on any variable, then every execution is equivalent to one where all threads see all writes in the same single global order, and each thread's operations appear in that order in its program order. How accurate is this rule? *
+- * It is fully accurate and describes the data race free guarantee.
+- It is nearly accurate, but it forgets that the global order must also respect real time, which the Java memory model enforces.
+- It is accurate only for volatile variables, not for plain shared variables.
+- It is inaccurate because the Java memory model gives no special guarantees for race free programs.
+
+Which combination of hardware level consistency model and language level model best matches the chapter's discussion of typical modern systems? *
+- * Hardware provides something close to total store order, while the language gives sequentially consistent behavior for data race free programs.
+- Hardware provides strict consistency, while the language layer intentionally weakens it to eventual consistency.
+- * Hardware provides a form of weak or release consistency, while the language builds a higher level model using fences and atomic operations.
+- Hardware provides causal consistency only, while the language relies entirely on programmers using locks correctly.
+
+Suppose a concurrent stack implementation is quiescently consistent but not linearizable. Which of the following behaviors is allowed by quiescent consistency yet forbidden by linearizability? *
+- At a quiescent point after several push and pop operations, the stack contains a sequence of elements that no sequential execution could produce.
+- During a period with no operations, the reported size of the stack temporarily becomes negative.
+- * Two overlapping pop operations return elements in an order that cannot be assigned linearization points inside their call and return intervals, but the final quiescent state matches some legal sequential execution.
+- A pop operation returns an element that was never pushed by any thread.
+
+You are diagnosing a suspicious performance drop when scaling a Java program from four to eight threads. Hardware counters show a sharp rise in coherence invalidations for a single cache line and very low instructions per cycle, but only inside a tight loop that increments per thread counters. Which diagnosis best fits the chapter's discussion? *
+- The program suffers primarily from capacity misses in the last level cache due to an oversized working set.
+- The program is limited by main memory bandwidth because each thread streams through disjoint arrays.
+- * The program exhibits severe false sharing because the per thread counters are packed into one cache line that bounces between cores.
+- The Java garbage collector is causing stop the world pauses that show up as coherence events.
+
+A developer states that coherence and sequential consistency are the same property. You are asked to design a counterexample that fits the chapter's definitions. Which scenario demonstrates a system that is coherent but not sequentially consistent? *
+- * All threads see writes to each individual variable in the same order, but some threads see writes to different variables in different relative orders.
+- A read sometimes returns a value that was never written by any thread, but all written values are otherwise seen in order.
+- * Reads and writes are coherent per variable, but one thread observes another thread's second write to variable x before its first write to variable y, while a third thread observes the opposite order.
+- The system never violates mutual exclusion but sometimes loses updates when multiple threads increment a shared counter.
+
+In a write back, write allocate cache using MESI, a core reads a line into Exclusive state, performs several writes, then evicts the line, while no other core ever touches that address. How does this combination of policies and protocol affect traffic to lower levels compared to a write through cache? *
+- Write back with Exclusive generates one read miss and one write back on eviction, while write through would generate the same number of transfers.
+- Write back with Exclusive generates multiple writes to lower levels, one for each store, while write through would combine them into a single write.
+- * Write back with Exclusive collapses multiple local writes into a single write back on eviction, while write through would propagate every store to lower levels, increasing bandwidth usage.
+- Both policies generate no traffic to lower levels because the line never enters Shared state.
+
+
+Given the Java program below, choose the fixes that you need to apply to make it semantically correct with respect to the concurrent behavior and choose the correct output value for these fixes.
+
+```java
+public class FixThisJavaProgram1 {
+
+    private static int counter = 0;
+
+    public static void main(String[] args) throws InterruptedException {
+        int threads = 5;
+        int incrementsPerThread = 1_000_000;
+
+        Thread[] workers = new Thread[threads];
+
+        for (int i = 0; i < threads; i++) {
+            workers[i] = new Thread(() -> {
+                for (int j = 0; j < incrementsPerThread; j++) {
+                    counter++;
+                }
+            });
+            workers[i].start();
+        }
+
+        System.out.println("Actual: " + counter);
+    }
+}
+```
+
+
+ * Change counter to AtomicInteger and replace counter++ with counter.incrementAndGet().
+
+ * Wrap the increment in a synchronized block on BrokenCounter.class, for example synchronized (BrokenCounter.class) &#123; counter++; &#125;.
+
+ * Make a synchronized static method increment() that does counter++ and call increment() instead of counter++.
+
+ * Guard counter++ with a single shared ReentrantLock, calling lock() before and unlock() after the increment.
+
+ * Declare counter as volatile int and leave the increment as counter++.
+
+ * Move counter into a local variable inside the worker Runnable so that each thread has its own counter.
+
+ * the correct output is 5,185
+
+ * the correct output is 1,000,000
+
+ * the correct output is 3,000,000
+
+ * the correct output is 5,000,000
+
+ * the program will never terminate -->

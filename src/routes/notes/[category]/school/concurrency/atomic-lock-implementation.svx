@@ -1,0 +1,510 @@
+---
+title: Implementing an Atomic Lock in Java
+description:
+author: Adam Aubry
+date: '2026-02-15'
+---
+
+<script>
+	import { base } from '$app/paths';
+    import SimpleFlashCard from '$lib/components/SimpleFlashCard.svelte';
+</script>
+
+## The Initial Problem
+
+With this simple Boolean lock we run into a problem...
+
+```Java
+class BooleanLock {
+    boolean state = false;
+
+    void lock() {
+        while (state) {}
+        state = true;
+    }
+
+        void unlock() {
+        state = false;
+    }
+}
+```
+
+The question is:
+
+<SimpleFlashCard  question="Does this work?" answer="No, not even with volatile"/>
+
+As noted even volatile can't fix this problem! Both threads see `state` is
+`false`, they both exit the loop, and they **both enter** the critical section. This
+breaks the principle of mutual exclusion and makes the threads crash into each other.
+
+Making the state variable volatile may see like the solution here, but remember volatiles
+job is to ensure **visibility** (Thread B see what Thread A wrote immediately), but it does 
+not provide **atomicity**.
+
+- Two threads can still read "false" at the exact same time, even if the variable is volatile.
+
+We now look into instructions that fix the issue of multiple threads entering the critical 
+section at the same time. Notably these instructions are **TAS (Test-And-Set)** and 
+**CAS (Compare-And-Set)**.
+
+- **TAS** (`getAndSet` in Java): This is an unconditional swap. "Make the value true no matter what, and tell me what it used to be."
+
+- **CAS** (`compareAndSet` in Java): This is a conditional swap. "Make the value true ONLY IF it is currently false."
+
+A wrapper named `AtomicBoolean` gives Java the access to these special CPU instructions (like LOCK XCHG on x86 processors) that
+lock the memory bus for a single cycle to ensure no two threads touch that variable at the exact same nanosecond.
+
+
+Armed with this information we can should be equip
+to decide weather this code will correctly lock a thread.
+
+```Java
+class TASLock {
+    AtomicBoolean state = new AtomicBoolean(false);
+
+    void lock() {
+        while (!state.getAndSet(true)) {}
+    }
+
+    void unlock() {
+        state.set(false);
+    }
+}
+```
+
+<SimpleFlashCard  question="Does this work?" answer="No, many threads may get the same lock"/>
+
+
+This because If you mistakenly use the inverted logic `while (!state.getAndSet(true)) {}`,
+you effectively create a "lock" that traps the first thread and lets everyone else in.
+
+Here is the step-by-step trace of why that happens:
+
+1. The "Winner" Traps Itself (Thread A)
+
+Imagine the lock is initially **FREE** (`state = false`).
+
+- **Thread A** calls `lock()`.
+
+- It executes `state.getAndSet(true)`.
+
+    - **Action:** It atomically sets `state` to `true`.
+
+    - **Result:** It returns the **old value** (`false`).
+
+    The Logic Check: The code checks `!false`, which is `true`.
+
+    The Outcome: `while(true)` -> **Thread A spins forever**.
+
+        Thread A successfully "grabbed" the lock (it changed the state to true), but your code forces it to wait because it succeeded
+    
+2. The "Losers" Break In (Thread B)
+
+Now the lock is **BUSY** (`state = true`) because Thread A changed it.
+
+- **Thread B** comes along and calls `lock()`.
+
+- It executes `state.getAndSet(true)`.
+
+    - **Action:** It sets `state` to `true` (no change).
+
+    - **Result:** It returns the old value (`true`).
+
+- **The Logic Check:** The code checks `!true`, which is `false`.
+
+- **The Outcome:** `while(false)` -> Thread B enters the Critical Section.
+
+    - Thread B saw that the lock was already held, and the logic mistakenly interpreted "Lock is held" as "Safe to enter."
+
+3. The Stampede (Thread C, D, E...)
+
+Because Thread B did not change the state (it is still `true`), the door remains wide open.
+- **Thread C** calls `lock()`.
+- It sees `true`, `!true` is `false`.
+- Thread C enters the critical section.
+
+Here is the corrected solution.
+
+```Java
+class TASLock {
+    AtomicBoolean state = new AtomicBoolean(false);
+
+    void lock() {
+        while (state.getAndSet(true)) {}
+    }
+
+    void unlock() {
+        state.set(false);
+    }
+}
+```
+
+## The problem of using `getAndSet()`
+
+### 1. `getAndSet()` is a "Loud" Instruction
+
+The key thing to understand is that `getAndSet(true)` is technically a write operation. Even if the value is already true and you overwrite it with true again, the hardware treats it as a modification.
+
+- **Atomic writes bypass the cache:** To ensure atomicity, an instruction like `getAndSet` cannot just update the local cache of the CPU. It has to go out to the shared memory bus to announce, "I am changing this value!"
+
+- **Invalidation:** When one processor writes to a shared variable, it forces all other processors to invalidate their cached copies of that variable .
+
+### 2. The "Traffic Jam"
+
+**The Scenario:** Thread A holds the lock. Threads B, C, and D are waiting.
+
+**The Behavior:** Threads B, C, and D are stuck in a while loop, executing getAndSet(true) over and over again—millions of times per second.
+
+**The Result:** Every single time they call that function, they send a "Write" signal down the bus.
+
+- Thread B writes -> Broadcasts to Bus -> Invalidates C and D.
+
+- Thread C writes -> Broadcasts to Bus -> Invalidates B and D.
+
+- Thread D writes -> Broadcasts to Bus -> Invalidates B and C.
+
+### 3. Why this destroys performance
+
+This creates a "storm" of traffic on the bus. The bus is a shared resource for the entire computer, not just for that one lock variable.
+
+**The Victim:** The thread that actually holds the lock (Thread A) is trying to do real work (reading/writing other variables).
+
+**The Problem:** Thread A cannot get its data because the bus is completely clogged with B, C, and D screaming "I am writing to the lock!" over and over.
+
+
+```Java
+class TTASlock {
+    AtomicBoolean state = new AtomicBoolean(false);
+    void lock() {
+        while (true) {
+
+            while (state.get()) {}
+
+            if (state.getAndSet(true)) return;
+
+        }
+    }
+}
+```
+
+#### Code Breakdown
+
+This lock introduces a two-step process to acquiring the lock, hence the name "Test-and-Test-and-Set."
+
+   1. **The Outer Loop** (`while (true)`):
+
+    - This is a retry loop. If you try to grab the lock and fail (someone else was faster), you go back to the start and try again.
+
+   2. **The Highlighted Inner Loop** (`while (state.get()) {}`):
+
+    - **The "First Test":** This loop just reads the value. It asks, "Is it busy? Is it busy?"
+
+    - **Crucial Difference:** It uses `.get()`, not `.getAndSet()`.
+
+    - **Behavior:** As long as the lock is held (busy), the thread spins here.
+
+   3. The Atomic Attempt (`if (!state.getAndSet(true)) return;`):
+
+    - **The "Second Test & Set":** Once the inner loop finishes (meaning the lock looks free), the thread attempts the expensive atomic operation to actually grab it.
+
+    - If `getAndSet(true)` returns `false` (it was free, and I just set it to busy), you return (you have the lock).
+
+    - If it returns `true` (someone else grabbed it in the nanosecond between the inner loop and this line), the `if` fails, and you loop back to the start.
+
+
+<SimpleFlashCard question="How does .get() work in this line of code while(state.get()) &#123;&#125;;?" answer="The thread spins on a local cache copy of the variable."/>
+
+In this "TTAS" lock, `state.get()` is a **read** operation.
+
+- When a thread reads a value that hasn't changed, the CPU can serve that request from its **local cache**.
+
+- It does not need to go out to the system bus.
+
+- Therefore, while waiting, the thread is silent. It generates **zero bus traffic**, allowing the thread holding the lock to finish its work faster .
+
+**Summary**
+
+- **TAS Lock:** "Are you free? (Write), Are you free? (Write)" -> Floods the Bus.
+- **TTAS Lock:** "Are you free? (Read/Cached)... Looks free! -> **Grab it (Write)**." -> **Quiet while waiting**.
+
+## There is still a performance problem!
+
+```Java
+class TTASlock {
+    AtomicBoolean state = new AtomicBoolean(false);
+    void lock() {
+        while (true) {
+
+            while (state.get()) {}
+
+            if (state.getAndSet(true)) return;
+            // At this point ALL threads go back to 
+            // competing for the lock. Contention!
+        }
+    }
+}
+```
+
+Consider the following Scenario:
+
+- **Scenario:** 10 threads are waiting.
+- **Event:** The lock opens (state becomes `false`).
+- **Reaction:** All 10 threads stop spinning and immediately fire a `getAndSet(true)` atomic instruction.
+- **Result:** 1 thread wins. 9 threads fail. But crucially, **10 expensive atomic writes** just flooded the system bus. This traffic jam slows down the winner, meaning the lock stays held longer, and the system gets slower.
+
+### The Solution: Backing Off
+
+The Backoff algorithm changes this dynamic by forcing losing threads to "step back" and wait before trying again.
+
+```Java
+public class Backoff implements Lock {
+    public void lock() {
+        int delay = MIN_DELAY;
+        while (true) {
+            while (state.get()) {}
+
+            if (!lock.getAndSet(true))
+                return;
+
+            sleep(random() % delay);
+            
+            if (delay < MAX_DELAY)
+                delay = 2 * delay;
+        }
+    }
+}
+```
+
+**Addition:** `sleep(random() % delay);`
+
+**Purpose:** Desynchronization.
+
+This line forces threads to wait a random amount of time before they are allowed to compete again.
+
+- Without this: If threads A and B both fail to get the lock, they will both loop around and try `getAndSet` again at the exact same nanosecond. They will collide forever (like two people trying to walk through a doorway at the same time and bumping shoulders repeatedly).
+
+- With this: Thread A might sleep for 2ms, while Thread B sleeps for 10ms. Thread A gets to try for the lock alone, without Thread B clogging the bus.
+
+**Addition:** `if (delay < MAX_DELAY) delay = 2 * delay;`
+
+**Purpose:** Adaptive Load Control (Exponential Backoff).
+
+This is the most clever part. It assumes that if you tried to get the lock and failed, it implies high contention (lots of people are waiting).
+
+- **The Logic:** "If I failed, it means the room is crowded. Trying again immediately will just add to the noise. I should wait longer this time to give the others a chance to clear out."
+
+- **The Benefit:**
+
+    - **Low Contention:** If only 1 thread is waiting, the delay stays small, and the lock feels fast.
+
+    - **High Contention:** If 100 threads are waiting, the delay grows rapidly (2, 4, 8, 16...). This drastically reduces the number of threads actively fighting for the bus at any given second.
+
+
+### Summary of Performance Benefits
+
+By adding these two lines, you achieve:
+
+1. **Reduced Bus Traffic:** Instead of 100 threads hammering the bus every cycle, they check in rarely.
+
+2. **Faster "Winner" Execution:** The thread that does hold the lock can run faster because the memory bus isn't clogged by the 99 losers constantly asking "Are we there yet?"
+
+3. **Less Cache Thrashing:** Fewer atomic writes means fewer Invalidate messages sent between CPU caches.
+
+## Improving the lock further using an Array 
+
+The main problem with the previous locks (TAS, Backoff) was that everyone was spinning on the same boolean variable (the "lock"). 
+The Array Lock fixes this by giving every thread its own separate boolean to spin on.
+
+```Java
+import java.util.concurrent.atomic.AtomicInteger;
+
+class ALock implements Lock {
+    // 1. Array of flags. 
+    // TRUE = "It is my turn" / "I have the lock"
+    // FALSE = "Wait"
+    private boolean[] flags;
+    
+    // 2. The ticket dispenser
+    // Ensures every thread gets a unique, increasing index
+    private AtomicInteger next = new AtomicInteger(0);
+    
+    // 3. Thread-local storage
+    // Each thread remembers its own slot index privately
+    private ThreadLocal<Integer> mySlot = new ThreadLocal<>();
+    
+    private int size;
+
+    public ALock(int capacity) {
+        this.size = capacity;
+        flags = new boolean[capacity];
+        
+        // 4. Initialization
+        // Slot 0 starts as TRUE because the lock is initially free.
+        // Whoever gets ticket #0 (the first thread) sees TRUE and enters immediately.
+        flags[0] = true; 
+        for (int i = 1; i < capacity; i++) {
+            flags[i] = false;
+        }
+    }
+
+    public void lock() {
+        // 5. Get a ticket
+        // slot = (0, 1, 2, 3...) % capacity
+        int slot = next.getAndIncrement() % size;
+        
+        // Save my slot index so I remember it for unlock()
+        mySlot.set(slot);
+        
+        // 6. Wait for my specific flag to become TRUE
+        // "Is it my turn yet?"
+        // This spins on a unique cache line (GOOD PERFORMANCE!)
+        while (!flags[slot]) {}; 
+    }
+
+    public void unlock() {
+        // Retrieve my own slot index
+        int slot = mySlot.get();
+        
+        // 7. Prevent re-entry
+        // I am done with my turn, so I set my own flag to false.
+        flags[slot] = false;
+        
+        // 8. Handoff
+        // I calculate the next slot in the circle and set IT to true.
+        // This wakes up the neighbor spinning on that specific index.
+        flags[(slot + 1) % size] = true;
+    }
+}
+```
+
+### Walkthrough
+
+Think of this like a Bakery or DMV ticket system, but instead of watching a big screen, everyone looks at their own personal pager.
+
+#### 1. The Setup
+
+We have an array of flags.
+
+- **Capacity:** We need one slot for every thread that might try to get the lock (e.g., 4 threads = 4 slots).
+
+- `next:` This is the ticket dispenser.
+
+- `mySlot:` This is the specific ticket number a thread holds.
+
+Initial State:
+
+- `flags[0]` is `true` (The lock is free for whoever holds ticket #0).
+
+- All other flags are `false` (Wait your turn).
+
+- `next` is 0.
+
+```text
+[  T  ,  F  ,  F  ,  F  ]
+Indices:  0     1     2     3
+         ^
+       Next Ticket: 0
+```
+
+#### Thread A Arrives (The Winner)
+
+Thread A calls `lock()`.
+1. `mySlot = next.getAndIncrement()`: Thread A takes a ticket.
+    - A gets 0.
+    - next becomes 1.
+2. `while (!flags[0]):` Thread A checks slot 0.
+
+    It sees `true`.
+
+    Loop finishes immediately.
+
+3. `flags[0] = false`: Thread A "consumes" the permission so nobody else can use ticket 0.
+
+4. **Enters Critical Section.**
+
+```text
+[  F  ,  F  ,  F  ,  F  ]   <-- A is inside Critical Section
+Indices:  0     1     2     3
+                ^
+              Next Ticket: 1
+```
+
+#### Thread B Arrives (The Waiter)
+
+Thread B calls `lock()` while A is still working.
+
+1. `mySlot = next.getAndIncrement()`: Thread B takes a ticket.
+    - B gets 1.
+    - `next` becomes 2.
+
+2. `while (!flags[1])`: Thread B checks slot 1.
+    - It sees `false`.
+    - **Thread B spins (waits).**
+
+```text
+[  F  ,  F  ,  F  ,  F  ]
+Indices:  0     1     2     3
+          ^     ^       ^
+     (A Inside) (B Spinning) Next Ticket: 2
+```
+
+#### 4. Thread C Arrives (The Second Waiter)
+
+Thread C calls `lock()`.
+
+1. `mySlot = next.getAndIncrement()`: Thread C takes a ticket.
+    - C gets 2.
+    - `next` becomes 3.
+
+2. `while (!flags[2])`: Thread C checks slot 2.
+    - It sees `false`.
+    - **Thread C spins (waits).**
+
+```text
+[  F  ,  F  ,  F  ,  F  ]
+Indices:  0     1     2     3
+          ^     ^     ^     ^
+     (A Inside) (B spins) (C spins) Next Ticket: 3
+```
+
+**Crucial Performance Detail:**
+Look at Thread B and Thread C.
+- Thread B is staring at `flags[1]`.
+- Thread C is staring at `flags[2]`.
+- **They are looking at different memory addresses!** This eliminates the "Bus Contention" problem. C's spinning does not slow down B, and neither of them slows down A.
+
+#### 5. Thread A Unlocks (The Handoff)
+
+Thread A finishes and calls `unlock()`. (Note: The `unlock` code wasn't in your snippet, but here is what it does).
+The logic is: `flags[(mySlot + 1) % size] = true`.
+1. A's slot was 0.
+2. A calculates the next slot: (0+1)=1.
+3. A sets `flags[1] = true`.
+
+```text
+[  F  ,  T  ,  F  ,  F  ]
+Indices:  0     1     2     3
+                ^
+           (B sees TRUE!)
+```
+
+- Thread B immediately sees `flags[1]` become true.
+
+- Thread B exits its loop, sets `flags[1] = false`, and enters the critical section.
+
+- Thread C is still spinning on `flags[2]`, completely undisturbed.
+
+#### Summary of the Code Logic
+
+- `getAndIncrement`: Get your unique place in line.
+
+- `while (!flags[mySlot])`: Wait for the person in front of you to finish.
+
+- `flags[mySlot] = false`: (Inside lock) This prevents you from re-entering immediately if the array wraps around later.
+
+- `unlock()`: You don't "open the lock"; you specifically tap the next person on the shoulder (set their flag to true).
+
+#### Why is this better?
+In the TAS lock, 100 threads fought over 1 variable.
+In the Array Lock, 100 threads wait on 100 different variables. 
+The CPU cache coherence mechanism is happy because nobody is fighting over the same cache line.

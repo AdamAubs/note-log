@@ -1,0 +1,36 @@
+---
+title: Add DynamoDB Permissions to IAM User 
+description: 
+author: Adam Aubry
+date: '2026-02-13'
+---
+## Add DynamoDB Permissions to IAM User
+
+**Step 1: Go to IAM Console**
+1. AWS Console → Search "IAM"
+2. Click **"Users"** in left sidebar
+3. Click on **"TreatDispenserFrontend"** user
+
+**Step 2: Add DynamoDB Policy**
+1. **Click the "Add permissions" dropdown** (blue button with dropdown arrow on the right)
+2. You should see these options:
+   - **Add permissions** (main option)
+   - **Create inline policy**
+   
+3. **Click "Add permissions"** (the main option, not the dropdown button itself)
+
+This will take you to a new page where you'll see:
+- **Attach policies directly** (radio button)
+- **Add user to group** (radio button)
+- **Copy permissions** (radio button)
+
+4. **Select "Attach policies directly"**
+5. Search for **`AmazonDynamoDBFullAccess`**
+6. Check the box
+7. Click **Next** → **Add permissions**
+
+---
+
+4. Click **Next**
+5. Name: `DynamoDBDeviceAccess`
+6. Click **Create policy**

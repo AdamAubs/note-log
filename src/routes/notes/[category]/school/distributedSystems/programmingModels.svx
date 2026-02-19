@@ -1,0 +1,83 @@
+---
+title: Programming Models 
+description: 
+author: Adam Aubry
+date: '2025-09-023'
+---
+
+<script>
+	import { base } from '$app/paths';
+</script>
+
+## Shared Memory Programming
+
+### Pros
+- Easy sharing of complex state
+- Incremental parallelization
+- Good performance for fine grained sharing
+
+### Cons
+- Data races are easy to introduce and hard to see
+- Coordinating access requires explicit synchronization everywhere
+- Scalability issues
+- Portability limitations
+
+## Message-Passing Programming
+
+Each process has it own local memory and communicates only by sending
+and receiving messages.
+
+### Pros
+- State ownership is clear and local 
+- The communication protocol is explicit and visible in the message types
+- The code is naturally distributable
+- Failure can be contained
+
+### Cons
+- Very verbose
+- You must design and maintain a protocol
+- There is overhead per message
+- Debugging is less linear
+
+## Data Parallel Style 
+
+Applies the same operation to many data items in bulk.
+
+### Pros
+
+
+## Task Parallel Style
+
+Programs that are built around units of work called tasks, which are scheduled
+dynamically on available workers. 
+
+### Pros
+- You do not have to manage low level concurrency.
+- Task parallelism handles load imbalance better than static partitioning.
+- Uses multiple cores
+- The structure is clear
+
+### Cons
+- You have to choose task granularity carefully so each task is heavy enough to pay for the scheduling cost.
+- You give up some control over how work is placed.
+- Debugging can be more complex
+- Not all problems fit the task model neatly.
+
+## SPMD (single program, multiple data) Style
+
+Many processes or threads execute the same program text, but each
+works on a different subset of the data and often follows different 
+control paths based on an identifier such as rank. 
+
+### Pros
+- Natural fit for distributed memory
+- High performance and control
+- Good Scalability
+- Portability across machines
+
+### Cons
+- Global behavior is implicit and can be hard to reason about.
+- communication patterns are your responsibility
+- Debugging is painful
+- Load balance and data distribution are manual
+- Code can become cluttered with rank based conditionals

@@ -1,0 +1,312 @@
+---
+title: Doubly linked list 
+description: 
+author: Adam Aubry
+date: '2026-02-13'
+---
+
+User: Can you explain why uou are keeping all signOut logic inside the homepage? Is this because the delay to handleSignOut() to aws is so simple that having an api to do this logic does not make sense in this architecture? It just feels a little counterintuive into why don't I just make all UI compents link to a call to the backend in the same file?
+
+GitHub Copilot: **Excellent question!** This touches on a fundamental architecture decision. Let me explain when to use **client-side logic** vs **API routes**.
+
+---
+
+## Why `signOut()` is Client-Side
+
+### How JWT Authentication Works
+
+```
+┌─────────────┐                    ┌──────────────┐
+│   Browser   │                    │  AWS Cognito │
+└──────┬──────┘                    └──────┬───────┘
+       │                                  │
+       │  1. Login (email/password)       │
+       ├─────────────────────────────────>│
+       │                                  │
+       │  2. Returns JWT tokens           │
+       │     (access, ID, refresh)        │
+       │<─────────────────────────────────┤
+       │                                  │
+       │  3. Store tokens in browser      │
+       │     (localStorage/cookies)       │
+       │                                  │
+       │  4. signOut() = delete tokens    │
+       │     (just clears browser)        │
+       │                                  │
+```
+
+**Key insight:** Cognito doesn't track "who's logged in" on the server. JWTs are **stateless** - the server just validates the token when you make requests. No server session to invalidate!
+
+```typescript
+// signOut() literally just does this:
+async function handleSignOut() {
+  await signOut(); // Clears tokens from browser
+  router.push('/login');
+}
+```
+
+**No server call needed** - just delete local tokens.
+
+---
+
+## When to Use API Routes vs Client-Side
+
+### ✅ Use **Client-Side** (like signOut):
+- **Auth operations** managed by Amplify (login, logout, token refresh)
+- **No secrets involved** - just managing browser state
+- **AWS SDK operations** that use temporary credentials from Cognito
+
+**Examples:**
+```typescript
+// ✅ Client-side: Sign out (just clears browser tokens)
+await signOut();
+
+// ✅ Client-side: Get current user (reads from local storage)
+const user = await getCurrentUser();
+
+// ✅ Client-side: Fetch auth session (gets tokens)
+const session = await fetchAuthSession();
+```
+
+---
+
+### ✅ Use **API Routes** (like IoT publish):
+- **Secrets/credentials** that can't be exposed to browser
+- **Server-side validation** or business logic
+- **Database operations** (DynamoDB, etc.)
+
+**Why IoT publish uses API route:**
+```typescript
+// ❌ DON'T do this in browser:
+const client = new IoTDataPlaneClient({
+  credentials: {
+    accessKeyId: 'AKIAXXXXX',      // ← Exposed to browser!
+    secretAccessKey: 'secret123',   // ← NEVER do this!
+  }
+});
+
+// ✅ Instead, use API route:
+await fetch('/api/iot/publish', {  // ← Server has secrets
+  method: 'POST',
+  body: JSON.stringify({ topic, message })
+});
+```
+
+---
+
+## Your Current Architecture (Correct!)
+
+```
+┌──────────────────────────────────────────────────┐
+│                  Client-Side                      │
+│  (Browser/React Components)                       │
+├──────────────────────────────────────────────────┤
+│                                                   │
+│  ✅ signOut() - Amplify SDK                       │
+│     → Clears JWT tokens locally                   │
+│                                                   │
+│  ✅ getCurrentUser() - Amplify SDK                │
+│     → Reads from localStorage                     │
+│                                                   │
+│  ❌ IoT publish - CAN'T do this                   │
+│     → Needs AWS credentials                       │
+│     → Must go through API route ↓                 │
+│                                                   │
+└───────────────────┬──────────────────────────────┘
+                    │
+                    ↓
+┌──────────────────────────────────────────────────┐
+│              API Routes (Server)                  │
+│  (Next.js Backend)                                │
+├──────────────────────────────────────────────────┤
+│                                                   │
+│  /api/iot/publish                                 │
+│    → Uses AWS_ACCESS_KEY_ID (secret)              │
+│    → Publishes to IoT Core                        │
+│                                                   │
+│  /api/devices (future)                            │
+│    → Queries DynamoDB                             │
+│    → Uses server credentials                      │
+│                                                   │
+└──────────────────────────────────────────────────┘
+```
+
+---
+
+## Why Not Everything Through API?
+
+### Option A: All through API (❌ Unnecessary)
+```typescript
+// Frontend
+await fetch('/api/auth/signout');  // ← Extra roundtrip!
+
+// Backend API route
+export async function POST() {
+  // Just calls signOut() anyway...
+  await signOut();
+  return { success: true };
+}
+```
+
+**Problems:**
+- Extra network roundtrip (slower)
+- Amplify already handles this securely client-side
+- More code to maintain
+- No security benefit
+
+### Option B: Direct client-side (✅ Current approach)
+```typescript
+// Frontend
+await signOut();  // ← Direct, fast, secure
+```
+
+**Benefits:**
+- Faster (no server roundtrip)
+- Simpler code
+- Amplify handles security
+- Industry standard pattern
+
+---
+
+## Rule of Thumb
+
+**Ask: "Does this need server resources/secrets?"**
+
+| Action | Needs Server? | Why |
+|--------|---------------|-----|
+| Sign out | ❌ No | Just clears browser tokens |
+| Get current user | ❌ No | Reads from browser storage |
+| Publish to IoT | ✅ Yes | Needs AWS credentials |
+| Query DynamoDB | ✅ Yes | Needs AWS credentials |
+| Claim device | ✅ Yes | Updates database |
+| Check if logged in | ❌ No | Check local tokens |
+
+---
+
+## TLDR
+
+**You're doing it right!** 
+
+- `signOut()` **client-side** = fast, secure, standard practice
+- `fetch('/api/iot/publish')` **server-side** = protects secrets
+
+Not everything needs an API route. Use them when you need server secrets or database access. For auth state management, Amplify's client SDK is the right tool.
+
+Your intuition is good for **data operations** (IoT, DB) but auth is a special case where client-side is actually better!
+
+
+User: So login was put into its own folder because of the next.js file structure requirements? 
+
+login is not consider an API route correct?
+
+
+GitHub Copilot: **Correct on both counts!**
+
+---
+
+## 1. Login Folder = Next.js Requirement ✅
+
+Yes, `app/login/` exists because Next.js App Router creates routes based on folder structure.
+
+---
+
+## 2. Login is NOT an API Route ✅
+
+**Huge distinction:**
+
+### 📄 **Page Routes** (UI/Frontend)
+```
+app/
+  login/
+    page.tsx          → URL: /login (renders UI)
+  devices/
+    page.tsx          → URL: /devices (renders UI)
+  page.tsx            → URL: / (homepage UI)
+```
+
+**These render HTML/React components** that users see in their browser.
+
+---
+
+### 🔌 **API Routes** (Backend Endpoints)
+```
+app/
+  api/
+    iot/
+      publish/
+        route.ts      → Endpoint: POST /api/iot/publish
+    devices/
+      route.ts        → Endpoint: GET /api/devices
+    auth/
+      signout/
+        route.ts      → Endpoint: POST /api/auth/signout
+```
+
+**These are server-side functions** that return JSON (no UI).
+
+---
+
+## Key Differences
+
+| Feature | Page Route (page.tsx) | API Route (`route.ts`) |
+|---------|------------------------|------------------------|
+| **Location** | page.tsx | `app/api/*/route.ts` |
+| **URL Pattern** | `/login` | `/api/login` |
+| **Returns** | HTML/React JSX | JSON data |
+| **Purpose** | User interface | Backend logic |
+| **Example** | Login form UI | Database query |
+
+---
+
+## Your Current Structure
+
+```
+app/
+├── login/
+│   └── page.tsx              ← PAGE ROUTE (UI at /login)
+│
+├── api/
+│   └── iot/
+│       └── publish/
+│           └── route.ts      ← API ROUTE (endpoint at /api/iot/publish)
+│
+└── page.tsx                  ← PAGE ROUTE (UI at /)
+```
+
+---
+
+## Why "api" Folder is Special
+
+**Convention:** Anything inside `app/api/` creates a **backend endpoint**, not a page.
+
+```typescript
+// app/api/iot/publish/route.ts
+export async function POST(request) {  // ← Backend function
+  return NextResponse.json({ success: true });
+}
+```
+
+**vs**
+
+```typescript
+// app/login/page.tsx
+export default function LoginPage() {  // ← React component
+  return <div>Login Form</div>;
+}
+```
+
+---
+
+## TLDR
+
+- ✅ `app/login/` = **Page route** (shows UI)
+- ✅ `app/api/iot/publish/` = **API route** (backend logic)
+- ✅ Only `app/api/*` creates backend endpoints
+- ✅ Everything else renders UI
+
+**Login is a page, not an API!**
+
+
+
+
+

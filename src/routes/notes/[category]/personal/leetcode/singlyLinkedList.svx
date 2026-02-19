@@ -1,0 +1,6 @@
+---
+title: Doubly linked list 
+description: 
+author: Adam Aubry
+date: '2025-08-30'
+---

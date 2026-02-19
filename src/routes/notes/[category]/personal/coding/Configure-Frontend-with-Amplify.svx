@@ -1,0 +1,548 @@
+---
+title: Configure Frontend with Amplify 
+description: 
+author: Adam Aubry
+date: '2026-02-13'
+---
+
+## Part 2: Configure Frontend with Amplify
+
+### Step 2.1: Install Dependencies
+
+```bash
+cd Treat-Dispenser-Frontend
+npm install aws-amplify @aws-amplify/ui-react
+```
+
+**Expected output:**
+
+```
+added 244 packages, changed 30 packages, and audited 1046 packages in 22s
+```
+
+**Note:** You may see security vulnerability warnings - this is normal. Run `npm audit fix` to resolve most issues.
+
+---
+
+### Step 2.2: Create Environment Variables
+
+Create `.env.local` file (or update existing):
+
+```bash
+# Create/edit .env.local
+vim .env.local
+```
+
+Add these values (replace with your actual values from Step 1.8):
+
+```env
+# Existing AWS IoT config
+NEXT_PUBLIC_AWS_REGION=us-east-1
+NEXT_PUBLIC_AWS_IOT_ENDPOINT=xxxxx-ats.iot.us-east-1.amazonaws.com
+AWS_ACCESS_KEY_ID=your-key-id
+AWS_SECRET_ACCESS_KEY=your-secret-key
+
+# NEW: Cognito configuration
+NEXT_PUBLIC_USER_POOL_ID=us-east-1_XXXXXXXXX
+NEXT_PUBLIC_USER_POOL_CLIENT_ID=1234567890abcdefghijklmnop
+```
+
+**⚠️ Important:**
+
+- Values prefixed with `NEXT_PUBLIC_` are accessible in the browser
+- Never prefix secrets like `AWS_SECRET_ACCESS_KEY` with `NEXT_PUBLIC_`
+
+---
+
+For this project I am using this homepage. This will work for
+any Amplify configuration that follows a similar architecture
+
+```ts
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getCurrentUser, signOut } from "aws-amplify/auth";
+
+export default function Home() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [testStatus, setTestStatus] = useState<string>("");
+  const [testLoading, setTestLoading] = useState(false);
+  const [dispenseStatus, setDispenseStatus] = useState<string>("");
+  const [dispenseLoading, setDispenseLoading] = useState(false);
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  async function checkUser() {
+    try {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+      setLoading(false);
+    } catch (error) {
+      // Not logged in, redirect to login page
+      router.push("/login");
+    }
+  }
+
+  async function handleSignOut() {
+    try {
+      await signOut();
+      router.push("/login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  const testPublish = async () => {
+    setTestLoading(true);
+    setTestStatus("Publishing test message...");
+
+    try {
+      const response = await fetch("/api/iot/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic: "TreatDispenser/commands",
+          message: { action: "test", timestamp: new Date().toISOString() },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setTestStatus(`✓ Success! Published to ${data.topic}`);
+      } else {
+        setTestStatus(`✗ Error: ${data.error}`);
+      }
+    } catch (error) {
+      setTestStatus(`✗ Failed to connect: ${error}`);
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
+  const dispensePublish = async () => {
+    setDispenseLoading(true);
+    setDispenseStatus("Publishing dispense treat message...");
+
+    try {
+      const response = await fetch("/api/iot/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          topic: "TreatDispenser/commands",
+          message: {
+            action: "DISPENSE",
+            timestamp: new Date().toISOString(),
+            requestedBy: "Web_UI",
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setDispenseStatus(
+          `✓ Success! Published dispense message to ${data.topic}`,
+        );
+      } else {
+        setDispenseStatus(`✗ Error: ${data.error}`);
+      }
+    } catch (error) {
+      setDispenseStatus(`✗ Failed to connect: ${error}`);
+    } finally {
+      setDispenseLoading(false);
+    }
+  };
+
+  return (
+    <main
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(to bottom, #f0f4f8, #e2e8f0)",
+        padding: "2rem",
+      }}
+    >
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        {/* Header with user info and sign out button */}
+        <header
+          style={{
+            marginBottom: "2rem",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                fontSize: "2.5rem",
+                fontWeight: "bold",
+                color: "#1a202c",
+                marginBottom: "0.5rem",
+              }}
+            >
+              🐱 Cat Treat Dispenser
+            </h1>
+            <p style={{ color: "#718096", fontSize: "1.1rem" }}>
+              Welcome, {user?.username || "Guest"}!
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <button
+              onClick={() => router.push("/devices")}
+              style={{
+                padding: "0.5rem 1rem",
+                background: "#4299e1",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "1rem",
+              }}
+            >
+              My Devices
+            </button>
+            <button
+              onClick={handleSignOut}
+              style={{
+                padding: "0.5rem 1rem",
+                background: "#e53e3e",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "1rem",
+              }}
+            >
+              Sign Out
+            </button>
+          </div>
+        </header>
+
+        {/* Test Connection Button */}
+        <div style={{ marginTop: "1.5rem" }}>
+          <button
+            onClick={testPublish}
+            disabled={testLoading}
+            style={{
+              background: testLoading ? "#cbd5e0" : "#4299e1",
+              color: "white",
+              padding: "0.75rem 1.5rem",
+              borderRadius: "8px",
+              border: "none",
+              fontSize: "1rem",
+              fontWeight: "600",
+              cursor: testLoading ? "not-allowed" : "pointer",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            {testLoading ? "Testing..." : "Test AWS IoT Connection"}
+          </button>
+          {testStatus && (
+            <p
+              style={{
+                marginTop: "0.75rem",
+                color: testStatus.startsWith("✓") ? "#38a169" : "#e53e3e",
+                fontWeight: "500",
+              }}
+            >
+              {testStatus}
+            </p>
+          )}
+        </div>
+
+        {/* Test Connection Button */}
+        <div style={{ marginTop: "1.5rem" }}>
+          <button
+            onClick={dispensePublish}
+            disabled={dispenseLoading}
+            style={{
+              background: dispenseLoading ? "#cbd5e0" : "#4299e1",
+              color: "white",
+              padding: "0.75rem 1.5rem",
+              borderRadius: "8px",
+              border: "none",
+              fontSize: "1rem",
+              fontWeight: "600",
+              cursor: dispenseLoading ? "not-allowed" : "pointer",
+              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            {dispenseLoading
+              ? "Publishing dispense message to MQTT broker..."
+              : "Publishes dispense message to MQTT broker"}
+          </button>
+          {dispenseStatus && (
+            <p
+              style={{
+                marginTop: "0.75rem",
+                color: dispenseStatus.startsWith("✓") ? "#38a169" : "#e53e3e",
+                fontWeight: "500",
+              }}
+            >
+              {dispenseStatus}
+            </p>
+          )}
+        </div>
+
+        {/* Dashboard Grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "3rem",
+          }}
+        >
+          {/* Cat Profiles Card */}
+          <div
+            style={{
+              background: "white",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "600",
+                marginBottom: "1rem",
+                color: "#2d3748",
+              }}
+            >
+              Cat Profiles
+            </h2>
+            <p style={{ color: "#718096" }}>No cats registered yet.</p>
+          </div>
+
+          {/* Recent Activity Card */}
+          <div
+            style={{
+              background: "white",
+              borderRadius: "12px",
+              padding: "1.5rem",
+              boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "600",
+                marginBottom: "1rem",
+                color: "#2d3748",
+              }}
+            >
+              Recent Activity
+            </h2>
+            <p style={{ color: "#718096" }}>No recent treats dispensed.</p>
+          </div>
+        </div>
+
+        {/*Where you cat is at*/}
+        <div
+          style={{
+            background: "white",
+            borderRadius: "12px",
+            padding: "1.5rem",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            marginTop: "2.5rem",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: "1.5rem",
+              fontWeight: "600",
+              marginBottom: "1rem",
+              color: "#2d3748",
+            }}
+          >
+            Where your Cat is at
+          </h2>
+          <p style={{ color: "#718096" }}>The cat is located:</p>
+        </div>
+      </div>
+    </main>
+  );
+}
+```
+
+### Step 2.3: Configure Amplify
+
+Create a new file for Amplify configuration:
+
+```bash
+Treat-Dispenser-Frontend/
+  ├── app/
+  ├── docs/
+  ├── lib/           ← Create this folder
+  │   └── amplify-config.ts
+  ├── package.json
+  └── ...
+```
+
+```typescript
+// lib/amplify-config.ts
+import { Amplify } from "aws-amplify";
+
+export function configureAmplify() {
+  Amplify.configure({
+    Auth: {
+      Cognito: {
+        userPoolId: process.env.NEXT_PUBLIC_USER_POOL_ID!,
+        userPoolClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID!,
+        loginWith: {
+          email: true,
+        },
+        signUpVerificationMethod: "code",
+        userAttributes: {
+          email: {
+            required: true,
+          },
+          name: {
+            required: false,
+          },
+        },
+        passwordFormat: {
+          minLength: 8,
+          requireLowercase: true,
+          requireUppercase: true,
+          requireNumbers: true,
+          requireSpecialCharacters: true,
+        },
+      },
+    },
+  });
+}
+```
+
+---
+
+### Step 2.4: Update Layout to Initialize Amplify
+
+Update your root layout:
+
+(TODO: Update file tree)
+```bash
+Treat-Dispenser-Frontend/
+  ├── app/
+  |
+  ├── docs/
+  ├── lib/           ← Create this folder
+  │   └── amplify-config.ts
+  ├── package.json
+  └── ...
+```
+
+```ts
+"use client";
+
+import { useEffect } from "react";
+import { configureAmplify } from "@/lib/amplify-config";
+import "./globals.css";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  useEffect(() => {
+    configureAmplify();
+  }, []);
+
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+### Step 2.5: Create Login Page with Authenticator
+
+Create a new login page:
+
+(TODO: Update file tree)
+```bash
+Treat-Dispenser-Frontend/
+  ├── app/
+  |
+  ├── docs/
+  ├── lib/           ← Create this folder
+  │   └── amplify-config.ts
+  ├── package.json
+  └── ...
+```
+
+```ts
+"use client";
+
+import { Authenticator } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+
+function RedirectIfAuthenticated({ user }: { user: any }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/");
+    }
+  }, [user, router]);
+
+  return null;
+}
+
+export default function LoginPage() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        background: "linear-gradient(to bottom, #f0f4f8, #e2e8f0)",
+      }}
+    >
+      <div
+        style={{
+          background: "white",
+          padding: "2rem",
+          borderRadius: "8px",
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        <h1 style={{ textAlign: "center", marginBottom: "2rem" }}>
+          🐱 Cat Treat Dispenser
+        </h1>
+        <Authenticator
+          signUpAttributes={["email", "name"]}
+          socialProviders={[]}
+        >
+          {({ user }) => <RedirectIfAuthenticated user={user} />}
+        </Authenticator>
+      </div>
+    </div>
+  );
+}
+```

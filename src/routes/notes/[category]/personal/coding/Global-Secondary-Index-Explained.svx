@@ -1,0 +1,57 @@
+---
+title: Global Secondary Index (GSI) Explained 
+description: 
+author: Adam Aubry
+date: '2026-02-13'
+---
+
+user: what is the global secondary index?
+
+github copilot: # global secondary index (gsi) explained
+
+a **gsi is an alternate way to query your dynamodb table** using different keys than the primary key.
+
+## the problem without gsi
+
+your table's **primary key** is `deviceid`:
+- ✅ you can query: "get device with id `abc123`"
+- ❌ you **cannot** query: "get all devices owned by user `john@example.com`"
+
+dynamodb can only query by primary key. to find a user's devices without a gsi, you'd have to **scan the entire table** (slow and expensive).
+
+## the solution: gsi
+
+a gsi creates an **alternate index** using `userid` as the key:
+
+```
+primary table (indexed by deviceid):
+deviceid    userid              devicename
+─────────────────────────────────────────
+abc123      john@example.com    fluffy's
+xyz789      jane@example.com    mittens'
+def456      john@example.com    whiskers'
+
+gsi: userid-index (indexed by userid):
+userid              deviceid    devicename
+─────────────────────────────────────────
+jane@example.com    xyz789      mittens'
+john@example.com    abc123      fluffy's
+john@example.com    def456      whiskers'
+```
+
+now you can efficiently query: "get all devices for `john@example.com`" → returns 2 devices instantly!
+
+## your use case
+
+when a user logs into your app:
+1. get their `userid` from cognito
+2. query the `userid-index` gsi
+3. get all their devices in milliseconds
+4. display their device list
+
+**without gsi:** scan 100,000 devices to find theirs (slow, expensive)  
+**with gsi:** direct lookup of only their devices (fast, cheap)
+
+---
+
+that's why we need it! ready to create the table and add the gsi?

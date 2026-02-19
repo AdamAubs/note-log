@@ -1,0 +1,112 @@
+---
+title: Implementing a Peterson Lock in Java
+description:
+author: Adam Aubry
+date: '2026-02-15'
+---
+
+<script>
+	import { base } from '$app/paths';
+</script>
+
+### The Peterson Lock
+
+```Java
+// 1. The Peterson Lock Definition
+class PetersonLock {
+    private volatile boolean[] flag = new boolean[2]; // 'volatile' for visibility in real Java
+    private volatile int victim;
+
+    public void lock() {
+        int i = ThreadID.get();
+        int j = 1 - i;
+
+        flag[i] = true;
+        victim = i;
+
+        // Wait while the other thread is interested AND I am the victim
+        while (flag[j] && victim == i) {};
+    }
+
+    public void unlock() {
+        int i = ThreadID.get();
+        flag[i] = false;
+    }
+}
+
+// 2. A Dummy Helper for Thread IDs (Simulating the lecture's ThreadID.get())
+class ThreadID {
+    // In a real app, you might map Thread.currentThread().getId() to 0 or 1.
+    // Here, we just use a thread-local variable for simplicity.
+    private static ThreadLocal<Integer> id = new ThreadLocal<>();
+
+    public static void set(int value) { id.set(value); }
+    public static int get() { return id.get(); }
+}
+
+// 3. The Shared Resource
+class SharedCounter {
+    private int count = 0;
+    private PetersonLock lock = new PetersonLock();
+
+    public void increment() {
+        lock.lock();
+        try {
+            count++; // CRITICAL SECTION
+            System.out.println("Thread " + ThreadID.get() + " incremented count to: " + count);
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+
+// 4. The Main Execution
+public class Main {
+    public static void main(String[] args) {
+        // Create ONE instance of the shared resource
+        SharedCounter counter = new SharedCounter();
+
+        // Create Thread 0
+        Thread t0 = new Thread(() -> {
+            ThreadID.set(0); // I am Thread 0
+            for (int i = 0; i < 5; i++) {
+                counter.increment();
+            }
+        });
+
+        // Create Thread 1
+        Thread t1 = new Thread(() -> {
+            ThreadID.set(1); // I am Thread 1
+            for (int i = 0; i < 5; i++) {
+                counter.increment();
+            }
+        });
+
+        // Start both threads
+        t0.start();
+        t1.start();
+    }
+}// 1. The Peterson Lock Definition
+class PetersonLock {
+    private boolean[] flag = new boolean[2];
+    private int victim;
+
+    public void lock() {
+        int i = ThreadID.get();
+        int j = 1 - i;
+
+        flag[i] = true;
+        victim = i;
+
+        // Wait while the other thread is interested AND I am the victim
+        while (flag[j] && victim == i) {};
+    }
+
+    public void unlock() {
+        int i = ThreadID.get();
+        flag[i] = false;
+    }
+}
+```
+
+<img src="/concurrency/images/peterson_lock.png" alt="execution digram" width="1000" />

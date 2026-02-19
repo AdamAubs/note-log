@@ -1,0 +1,85 @@
+---
+title: DynamoDB Table Setup - Step-by-Step Guide 
+description: 
+author: Adam Aubry
+date: '2026-02-13'
+---
+
+Want me to guide you through the DynamoDB setup, or jump straight to building the API routes once you've created the table?
+
+User: Yes, can you please walk me through the DynamoDB setup. I have never done it before
+
+GitHub Copilot: # DynamoDB Table Setup - Step-by-Step Guide
+
+## Step 1: Navigate to DynamoDB
+
+1. **Log into AWS Console** at https://console.aws.amazon.com
+2. **Make sure you're in the correct region** - top right should show **us-east-2** (Ohio)
+   - If not, click the region dropdown and select "US East (Ohio)"
+3. **Search for DynamoDB**:
+   - Type "DynamoDB" in the search bar at the top
+   - Click on "DynamoDB" under Services
+
+## Step 2: Create the Table
+
+1. **Click "Create table"** (orange button on the right)
+
+2. **Table details:**
+   - **Table name:** `DeviceOwnership`
+   - **Partition key:** `deviceId` (leave type as "String")
+   - **Sort key:** Leave blank (we don't need one)
+
+3. **Table settings section:**
+   - Select **"Default settings"** (should already be selected)
+   - This gives you:
+     - **Table class:** DynamoDB Standard
+     - **Capacity mode:** On-demand
+     - Perfect for development
+
+4. **Skip the Tags section** (optional)
+
+5. **Click "Create table"** (orange button at bottom right)
+
+## Step 3: Wait for Table Creation
+
+- Table status will show "Creating..." for 30-60 seconds
+- When status shows **"Active"** in green, proceed to next step
+
+## Step 4: Add the Global Secondary Index (GSI)
+
+**[What is Global Secondary Index?](Global-Secondary-Index-Explained)**
+
+1. **Click on your table name** (`DeviceOwnership`) if not already there
+2. **Click the "Indexes" tab**
+3. **Click "Create index"** button
+4. **Index settings:**
+   - **Index name:** `userId-index` (should auto-fill)
+   - **Partition key:** `userId` (String)
+   - **Sort key:** Leave blank
+   - **Attribute projections:** All (default)
+5. **Click "Create index"**
+6. Wait 30 seconds for index status to become **"Active"**
+
+---
+
+## Step 5: Test with Sample Data (Optional)
+
+1. **Go to "Explore table items" tab**
+2. **Click "Create item"**
+3. **Add attributes:**
+   - `deviceId` (already there): `TEST123`
+   - Click **"Add new attribute"** → **String** → Name: `userId` → Value: `testuser@example.com`
+   - Click **"Add new attribute"** → **String** → Name: `deviceName` → Value: `Test Dispenser`
+   - Click **"Add new attribute"** → **String** → Name: `claimedAt` → Value: `2026-02-13T19:00:00Z`
+4. **Click "Create item"**
+
+5. **Test the GSI:**
+   - Click **"Scan or query items"**
+   - Change dropdown from "Scan" to **"Query"**
+   - Select index: **`userId-index`**
+   - Enter `userId` = `testuser@example.com`
+   - Click **"Run"**
+   - You should see your test item!
+---
+
+**You're done!** 🎉 The table is ready.

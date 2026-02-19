@@ -1,0 +1,137 @@
+---
+title: How to Build API routes to query DynamoDB Table 
+description: 
+author: Adam Aubry
+date: '2026-02-13'
+---
+
+
+## Step 1: Create file structure
+
+```bash
+Treat-Dispenser-Frontend/
+  ├── app/
+  ├── docs/
+  ├── lib/           ← Create this folder
+  │   └── amplify-config.ts
+  ├── package.json
+  └── ...
+```
+
+## Step 2: Update
+
+
+## Step 1: Install AWS SDK for DynamoDB
+
+In your Next.js directory run
+
+```bash
+npm install @aws-sdk/client-dynamodb @aws-sdk/lib-dynamodb @aws-amplify/adapter-nextjs
+```
+
+## Step 2: Add Environment Variables
+
+Now add it to your actual .env.local file:
+
+```bash
+# DynamoDB Configuration
+DYNAMODB_TABLE_NAME=DeviceOwnership
+```
+
+## Step 3: Create API Route to Get Devices Created file and managed todo items
+
+```ts
+import { NextRequest, NextResponse } from "next/server";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
+
+// Initialize DynamoDB client
+const client = new DynamoDBClient({
+  region: process.env.AWS_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
+
+const docClient = DynamoDBDocumentClient.from(client);
+
+// GET /api/devices?userId=email@example.com - Get all devices for a user
+export async function GET(request: NextRequest) {
+  try {
+    // Get userId from query parameter (sent from client-side after Cognito auth)
+    const searchParams = request.nextUrl.searchParams;
+    const userId = searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "userId query parameter is required" },
+        { status: 400 },
+      );
+    }
+
+    // Scan table for devices owned by this user
+    // Note: Without GSI, we use Scan with filter. Less efficient but works.
+    const command = new ScanCommand({
+      TableName: process.env.DYNAMODB_TABLE_NAME!,
+      FilterExpression: "userId = :userId",
+      ExpressionAttributeValues: {
+        ":userId": userId,
+      },
+    });
+
+    const response = await docClient.send(command);
+
+    return NextResponse.json({
+      devices: response.Items || [],
+      count: response.Count || 0,
+      userId: userId,
+    });
+  } catch (error: any) {
+    console.error("Error fetching devices:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch devices", details: error.message },
+      { status: 500 },
+    );
+  }
+}
+```
+
+## Step 5: Create a test page to call this API:
+
+```ts
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getCurrentUser, signOut } from "aws-amplify/auth";
+
+export default function Home() {
+
+    return (
+            <main>
+                <button
+                onClick={() => router.push("/devices")}
+                style={{
+                    padding: "0.5rem 1rem",
+                    background: "#4299e1",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "1rem",
+                }}
+                >
+                My Devices
+                </button>
+            </main>
+        );
+}
+```
+
+## Step 6: Add a device
+
+
+
+
+

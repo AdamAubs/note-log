@@ -109,4 +109,4 @@ class PetersonLock {
 }
 ```
 
-<img src="/concurrency/images/peterson_lock.png" alt="execution digram" width="1000" />
+<img src="{base}/concurrency/images/peterson_lock.png" alt="execution digram" width="1000" />

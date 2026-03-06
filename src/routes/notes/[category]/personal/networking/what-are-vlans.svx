@@ -1,0 +1,11 @@
+---
+title: What are VLANs?
+description: Walking through what VLANs are as a complete novice.
+author: Adam Aubry
+date: '2025-08-30'
+---
+
+# VLANs
+
+First, what does VLAN stand for?
+

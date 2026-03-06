@@ -5,6 +5,10 @@ author: Adam Aubry
 date: '2026-03-04'
 ---
 
+<script>
+  import { base } from '$app/paths';
+</script>
+
 <details>
 <summary>What is software engineering?</summary>
 <blockquote>
@@ -33,7 +37,7 @@ Software engineering (SE) involves large software development projects that requ
 
 <blockquote>
 The Waterfall model performs all development stages sequentially. Each stage must be completed and "signed off" before the next one starts. It is a linear and rigid approach.
-<img src="/softwareEngineering/waterfall-model.png" alt="kinesis-freestyle-2" width="500" />
+<img src="{base}/softwareEngineering/waterfall-model.png" alt="kinesis-freestyle-2" width="500" />
 </blockquote>
 
 </details>
@@ -43,7 +47,7 @@ The Waterfall model performs all development stages sequentially. Each stage mus
 
 <blockquote>
 The V-Model illustrates the direct relationship between test planning and test execution. For every development phase (on the left side of the V), there is a corresponding testing phase (on the right side of the V). For example, Requirements Analysis is linked directly to User Acceptance Testing.
-<img src="/softwareEngineering/v-model.png" alt="kinesis-freestyle-2" width="500" />
+<img src="{base}/softwareEngineering/v-model.png" alt="kinesis-freestyle-2" width="500" />
 
 </blockquote>
 

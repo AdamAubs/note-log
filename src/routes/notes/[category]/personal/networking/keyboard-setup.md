@@ -5,11 +5,15 @@ author: Adam Aubry
 date: '2025-08-30'
 ---
 
+<script>
+  import { base } from '$app/paths';
+</script>
+
 ### The Scenario
 
 I just bought a new keyboard named the KINESIS Freestyle 2. I want to use it with my new computer in the most egonomic way possible to maximize typing speed and wrist health.
 
-<img src="/networking/kinesis-freestyle-2.png" alt="kinesis-freestyle-2" width="1000" />
+<img src="{base}/networking/kinesis-freestyle-2.png" alt="kinesis-freestyle-2" width="1000" />
 
 ### The Setup
 
@@ -45,7 +49,7 @@ To get the most out of a split keyboard, the goal is "Neutral Posture"—where y
 - Open the **Apple Menu ()** and select **System Settings**.
 - Scroll down the sidebar and click on **Keyboard**.
 
-<img src="/networking/mac-keyboard-settings-1.png" alt="mac-keyboard-settings" width="1000" />
+<img src="{base}/networking/mac-keyboard-settings-1.png" alt="mac-keyboard-settings" width="1000" />
 
 - Click on `Keyboard Shortcuts`
 
@@ -56,7 +60,7 @@ Use this to change the behavior of the "control" keys on your Kinesis.
 - **Select Keyboard**: Ensure **KB800 Kinesis Freestyle** is selected in the dropdown.
 - **Key Remapping**: Use the dropdowns to swap functions (e.g., changing **Caps Lock** to **Control** for easier coding shortcuts).
 
-<img src="/networking/modifer-keys.png" alt="mac-keyboard-settings" width="1000" />
+<img src="{base}/networking/modifer-keys.png" alt="mac-keyboard-settings" width="1000" />
 
 ### **Mission Control**
 
@@ -66,7 +70,7 @@ These shortcuts help you manage your open windows and workspaces.
 - **Application Windows (`^↓`)**: Shows only the windows of the app you are currently using.
 - **Show Desktop (`F11`)**: Instantly hides all windows to show your files.
 
-<img src="/networking/mission-control.png" alt="mac-keyboard-settings" width="1000" />
+<img src="{base}/networking/mission-control.png" alt="mac-keyboard-settings" width="1000" />
 
 ### **Spotlight**
 
@@ -75,7 +79,7 @@ Your primary tool for finding files and launching apps like your **FiberGround**
 - **Show Spotlight Search (`⌘Space`)**: Opens the search bar in the middle of your screen.
 - **Show Finder Search Window (`⌥⌘Space`)**: Opens a full Finder window pre-set to search your entire Mac.
 
-<img src="/networking/spotlight.png" alt="mac-keyboard-settings" width="1000" />
+<img src="{base}/networking/spotlight.png" alt="mac-keyboard-settings" width="1000" />
 
 ### **Screenshots**
 
@@ -84,4 +88,4 @@ Essential for documenting.
 - **Save to File (`⇧⌘3` or `⇧⌘4`)**: Captures your full screen or a selected area and saves it to your desktop.
 - **Copy to Clipboard (`⌃⇧⌘3` or `⌃⇧⌘4`)**: Does the same as above but saves it to your clipboard for instant pasting into your blog.
 
-<img src="/networking/screenshots.png" alt="mac-keyboard-settings" width="1000" />
+<img src="{base}/networking/screenshots.png" alt="mac-keyboard-settings" width="1000" />

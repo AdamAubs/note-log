@@ -5,6 +5,10 @@ author: Adam Aubry
 date: '2026-03-06'
 ---
 
+<script>
+  import { base } from '$app/paths';
+</script>
+
 ## What is GraphQL?
 
 GraphQL is a **query language for APIs**. Instead of hitting different URL endpoints for different data, you send a single request to one endpoint describing exactly what you want back.
@@ -126,13 +130,13 @@ It's a clean way to keep a service's logic self-contained. If the LeetCode servi
 ## How to Check your Browser for the right graphql query
 
 1. Open your leetcode profile
-   <img src="/charityCode/graphql-tut-1.png" alt="graphql tutorial 1" width="1000" />
+   <img src="{base}/charityCode/graphql-tut-1.png" alt="graphql tutorial 1" width="1000" />
 2. Open the network tab in your dev tools and type graphql in the filter URL input field
-   <img src="/charityCode/graphql-tut-2.png" alt="graphql tutorial 2" width="1000" />
+   <img src="{base}/charityCode/graphql-tut-2.png" alt="graphql tutorial 2" width="1000" />
 3. Refresh the page
-   <img src="/charityCode/graphql-tut-3.png" alt="graphql tutorial 3" width="1000" />
+   <img src="{base}/charityCode/graphql-tut-3.png" alt="graphql tutorial 3" width="1000" />
 4. Look at the Request to get the query and variables
-   <img src="/charityCode/graphql-tut-4.png" alt="graphql tutorial 4" width="1000" />
+   <img src="{base}/charityCode/graphql-tut-4.png" alt="graphql tutorial 4" width="1000" />
 
 ---
 

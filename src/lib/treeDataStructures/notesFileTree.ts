@@ -4,6 +4,27 @@ export const notesFileTree = [
 		type: 'folder',
 		children: [
 			{
+				name: 'Networking',
+				type: 'folder',
+				children: [
+					{
+						name: 'Setting up a New Keyboard',
+						path: '/notes/personal/networking/keyboard-setup',
+						type: 'file'
+					},
+					{
+						name: 'What are VLANs?',
+						path: '/notes/personal/networking/what-are-vlans',
+						type: 'file'
+					},
+					{
+						name: 'Verifying Server Reachability',
+						path: '/notes/personal/networking/verifying-server-reachability',
+						type: 'file'
+					}
+				]
+			},
+			{
 				name: 'Linux',
 				type: 'folder',
 				children: [
@@ -259,10 +280,25 @@ export const notesFileTree = [
 								type: 'file'
 							},
 							{
+								name: 'Communication_Costs_and_Collective_Operations',
+								path: '/notes/school/distributedSystems/Communication_Costs_and_Collective_Operations',
+								type: 'file'
+							},
+							{
+								name: 'Debugging, Profiling, and Scaling MPI Applications',
+								path: '/notes/school/distributedSystems/debugging_profiling_scaling_mpi_applications',
+								type: 'file'
+							},
+							{
+								name: 'MPI Reference Guide',
+								path: '/notes/school/distributedSystems/mpi-reference-guide',
+								type: 'file'
+							},
+							{
 								name: 'Ch1 - flash-cards',
 								path: '/notes/school/distributedSystems/ch1FlashCards.svx',
 								type: 'file'
-							},
+							}
 						]
 					}
 				]
@@ -287,6 +323,97 @@ export const notesFileTree = [
 							}
 						]
 					}
+				]
+			},
+			{
+				name: 'Software Engineering',
+				type: 'folder',
+				children: [
+					{
+						name: 'Foundations & Methodologies',
+						type: 'folder',
+						children: [
+							{
+								name: 'Overview of Software Engineering',
+								path: '/notes/school/softwareEngineering/overview-methodologies',
+								type: 'file'
+							},
+							{
+								name: 'Software Life Cycle Models',
+								path: '/notes/school/softwareEngineering/life-cycle-models',
+								type: 'file'
+							}
+						]
+					}
+					// {
+					// 	name: 'Agile & Project Management',
+					// 	type: 'folder',
+					// 	children: [
+					// 		{
+					// 			name: 'Scrum Implementation with Jira',
+					// 			path: '/notes/school/software-engineering/scrum-jira',
+					// 			type: 'file'
+					// 		},
+					// 		{
+					// 			name: 'Version Control and Git',
+					// 			path: '/notes/school/software-engineering/version-control',
+					// 			type: 'file'
+					// 		}
+					// 	]
+					// },
+					// {
+					// 	name: 'Requirements & Use Cases',
+					// 	type: 'folder',
+					// 	children: [
+					// 		{
+					// 			name: 'Project Description & Stakeholders',
+					// 			path: '/notes/school/software-engineering/project-description',
+					// 			type: 'file'
+					// 		},
+					// 		{
+					// 			name: 'Functional & Non-Functional Requirements',
+					// 			path: '/notes/school/software-engineering/requirements',
+					// 			type: 'file'
+					// 		},
+					// 		{
+					// 			name: 'Stories, Scenarios, and Use Cases',
+					// 			path: '/notes/school/software-engineering/use-cases',
+					// 			type: 'file'
+					// 		}
+					// 	]
+					// },
+					// {
+					// 	name: 'UML Modeling',
+					// 	type: 'folder',
+					// 	children: [
+					// 		{
+					// 			name: 'Unified Modeling Language Overview',
+					// 			path: '/notes/school/software-engineering/uml-overview',
+					// 			type: 'file'
+					// 		},
+					// 		{
+					// 			name: 'Activity and State Diagrams',
+					// 			path: '/notes/school/software-engineering/activity-state-diagrams',
+					// 			type: 'file'
+					// 		}
+					// 	]
+					// },
+					// {
+					// 	name: 'Analysis & System Design',
+					// 	type: 'folder',
+					// 	children: [
+					// 		{
+					// 			name: 'The Analysis Model',
+					// 			path: '/notes/school/software-engineering/analysis-phase',
+					// 			type: 'file'
+					// 		},
+					// 		{
+					// 			name: 'System Design & Design Goals',
+					// 			path: '/notes/school/software-engineering/system-design',
+					// 			type: 'file'
+					// 		}
+					// 	]
+					// }
 				]
 			}
 		]

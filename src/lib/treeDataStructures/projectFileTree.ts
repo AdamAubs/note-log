@@ -4,17 +4,22 @@ export const projectFileTree = [
 		type: 'folder',
 		children: [
 			{
-				name: 'Projects',
+				name: 'charityCode',
 				type: 'folder',
 				children: [
 					{
-						name: 'first project',
-						path: '/projects/personal/first-post',
+						name: 'What is charityCode',
+						path: '/projects/personal/charityCode/what-is-charityCode',
 						type: 'file'
 					},
 					{
-						name: 'Second project',
-						path: '/projects/personal/second-post',
+						name: '01-backend-setup',
+						path: '/projects/personal/charityCode/01-backend-setup',
+						type: 'file'
+					},
+					{
+						name: '02-graphql-vs-http',
+						path: '/projects/personal/charityCode/02-graphql-vs-http',
 						type: 'file'
 					}
 				]
